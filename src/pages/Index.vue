@@ -1,0 +1,124 @@
+<script setup lang='ts'>
+import { getFileList, getPreUrl } from "@/api/modules"
+import { instanceObject, Music } from "@/types"
+import APlayer from 'APlayer'
+
+const musicList = ref<Music[]>([])
+
+const curPlayer = ref<Music>()
+
+function formatMusicKey(key: string) {
+  let musickey = key.split("/")[1].replace('.flac', '').split('-')
+  return {
+    key,
+    artist: musickey[0],
+    name: musickey[1]
+  }
+}
+
+function playByUrl(idx: number) {
+  curPlayer.value = musicList.value[idx]
+  getSingleAplayerInstance().toggle()
+}
+
+function downloadMusic(music: Music) {
+  getPreUrl(encodeURIComponent(music.key))
+    .then(res => {
+      if (res && res.code == 200) {
+        const a = document.createElement('a')
+        console.log(music)
+        a.setAttribute('download', music.key)
+        a.setAttribute('href', res.url)
+        a.click()
+      }
+    })
+}
+
+function getSingleAplayerInstance() {
+  let ap
+  return ap || (ap = new APlayer({
+    container: document.getElementById('aplayer'),
+    lrcType: 3,
+    audio: curPlayer.value
+  }))
+}
+
+function initMusicList() {
+  getFileList(encodeURIComponent("音频文件/"))
+    .then(res => {
+      if (res && res.code === 200) {
+        res.data.shift()
+        res.data.forEach((item: instanceObject) => {
+          // 预览使用七牛云，注意名称和cos中的保持一致
+          let baseURL = "http://mochenghualei.com.cn/"
+
+          let keyName = encodeURIComponent(item.Key.split("/")[1].replace(".flac", "").replace("..lrc", ""))
+          let musicItem = {
+            ...formatMusicKey(item.Key),
+            url: baseURL + "audios/" + keyName + ".flac",
+            cover: "http://mochenghualei.com.cn/covers/jj-%E9%87%8D%E6%8B%BE%E5%BF%AB%E4%B9%90.jpeg",
+            // cover: baseURL + "covers/" + keyName,
+            lrc: baseURL + "lrcs/" + keyName + ".lrc",
+          }
+          musicList.value.push(musicItem)
+          curPlayer.value = musicList.value[0]
+        })
+      }
+    })
+    .catch(err => {
+      throw new Error(`getFileList:::${err}`)
+    })
+}
+
+onMounted(() => {
+  initMusicList()
+  setTimeout(() => getSingleAplayerInstance(), 500)
+})
+</script>
+
+
+<template>
+  <div h100vh w100vw overflow-hidden flex-row>
+    <!-- left -->
+    <div h="100%" w="50%" p-10 box-border flex flex-col justify-between items-start>
+      <div id="aplayer"></div>
+      <div text-5 font-serif font-italic>made by mocheng·shuai</div>
+    </div>
+    <!-- right -->
+    <div h="100%" flex-1 p-10 box-border>
+      <div w="80%" relative>
+        <img w50 h50 absolute top-0 left-6 src="../assets/back.png" alt="err">
+        <img w50 h50 absolute top-0 left-0 src="../assets/cover.jpeg" alt="err">
+        <div absolute right-0>
+          <h1 text-8 mb-2>重拾_快乐</h1>
+          <h1 text-6 float-right>林俊杰</h1>
+        </div>
+      </div>
+      <ul w="85%" mt-55 h="75%">
+        <el-scrollbar>
+          <li v-for="(music, index) in musicList" :key="index" flex justify-between items-center my-3
+            hover:bg-green-500:30 transition px-10 py-6 box-content>
+            <div>
+              <span>{{ music.artist }}-{{ music.name }}</span>
+              <span ml-5 rounded-1 text-center px-2 color="#000" bg="#e5c894">flac</span>
+            </div>
+            <div>
+              <el-button plain type="success" @click="playByUrl(index)">播放</el-button>
+              <el-button plain type="success" @click="downloadMusic(music)">下载</el-button>
+            </div>
+          </li>
+        </el-scrollbar>
+
+      </ul>
+    </div>
+  </div>
+</template>
+
+<style>
+.aplayer .aplayer-info .aplayer-music .aplayer-title {
+  font-size: 12px;
+  color: #666;
+}
+</style>
+
+
