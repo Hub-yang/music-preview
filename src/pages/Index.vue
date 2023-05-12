@@ -99,7 +99,7 @@ onMounted(() => {
           <li class="slide-in-fwd-center" :style="{ animationDelay: index / 5 + 's' }" v-for="(music, index) in musicList"
             :key="index" flex justify-between items-center my-3 hover:bg-green-500:30 transition px-10 py-6 box-content>
             <div>
-              <span>{{ music.artist }}-{{ music.name }}</span>
+              <span @dblclick="playByUrl(index)" cursor-pointer>{{ music.artist }}-{{ music.name }}</span>
               <span ml-5 rounded-1 text-center px-2 color="#000" bg="#e5c894">flac</span>
             </div>
             <div>
