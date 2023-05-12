@@ -26,7 +26,6 @@ function downloadMusic(music: Music) {
     .then(res => {
       if (res && res.code == 200) {
         const a = document.createElement('a')
-        console.log(music)
         a.setAttribute('download', music.key)
         a.setAttribute('href', res.url)
         a.click()
