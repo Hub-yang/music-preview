@@ -6,7 +6,7 @@ const commonRoutes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'index',
     meta: {
-      title: 'index',
+      title: 'paly music',
       icon: '',
     },
     component: () => import('@/pages/Index.vue'),
