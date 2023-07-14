@@ -1,6 +1,6 @@
-<script setup lang='ts'>
-import { getFileList, getPreUrl } from "@/api/modules"
-import { instanceObject, Music } from "@/types"
+<script setup lang="ts">
+import { getFileList, getPreUrl } from '@/api/modules'
+import { instanceObject, Music } from '@/types'
 import APlayer from 'APlayer'
 
 const musicList = ref<Music[]>([])
@@ -8,11 +8,11 @@ const musicList = ref<Music[]>([])
 const curPlayer = ref<Music>()
 
 function formatMusicKey(key: string) {
-  let musickey = key.split("/")[1].replace('.flac', '').split('-')
+  let musickey = key.split('/')[1].replace('.flac', '').split('-')
   return {
     key,
     artist: musickey[0],
-    name: musickey[1]
+    name: musickey[1],
   }
 }
 
@@ -22,49 +22,57 @@ function playByUrl(idx: number) {
 }
 
 function downloadMusic(music: Music) {
-  getPreUrl(encodeURIComponent(music.key))
-    .then(res => {
-      if (res && res.code == 200) {
-        const a = document.createElement('a')
-        a.setAttribute('download', music.key)
-        a.setAttribute('href', res.url)
-        a.click()
-      }
-    })
+  getPreUrl(encodeURIComponent(music.key)).then((res) => {
+    if (res && res.code == 200) {
+      const a = document.createElement('a')
+      a.setAttribute('download', music.key)
+      a.setAttribute('href', res.url)
+      a.click()
+    }
+  })
 }
 
 function getSingleAplayerInstance() {
   let ap
-  return ap || (ap = new APlayer({
-    container: document.getElementById('aplayer'),
-    lrcType: 3,
-    audio: curPlayer.value
-  }))
+  return (
+    ap ||
+    (ap = new APlayer({
+      container: document.getElementById('aplayer'),
+      lrcType: 3,
+      audio: curPlayer.value,
+    }))
+  )
 }
 
 function initMusicList() {
-  getFileList(encodeURIComponent("音频文件/"))
-    .then(res => {
+  getFileList(encodeURIComponent('音频文件/'))
+    .then((res) => {
       if (res && res.code === 200) {
         res.data.shift()
         res.data.forEach((item: instanceObject) => {
           // 预览使用七牛云，注意名称和cos中的保持一致
-          let baseURL = "http://mochenghualei.com.cn/"
+          let baseURL = 'https://mochenghualei.com.cn/'
+          // https://personal-web-1308697453.cos.ap-beijing.myqcloud.com/%E9%9F%B3%E9%A2%91%E6%96%87%E4%BB%B6/%E6%9E%97%E4%BF%8A%E6%9D%B0-%E9%BB%91%E8%89%B2%E6%B3%A1%E6%B2%AB.flac
 
-          let keyName = encodeURIComponent(item.Key.split("/")[1].replace(".flac", "").replace("..lrc", ""))
+          let keyName = encodeURIComponent(item.Key.split('/')[1].replace('.flac', '').replace('..lrc', ''))
+          console.log(keyName)
           let musicItem = {
             ...formatMusicKey(item.Key),
-            url: baseURL + "audios/" + keyName + ".flac",
-            cover: "http://mochenghualei.com.cn/covers/jj-%E9%87%8D%E6%8B%BE%E5%BF%AB%E4%B9%90.jpeg",
-            // cover: baseURL + "covers/" + keyName,
-            lrc: baseURL + "lrcs/" + keyName + ".lrc",
+            // 音频播放使用cos，歌词和封面使用七牛云
+            url:
+              'https://personal-web-1308697453.cos.ap-beijing.myqcloud.com/' +
+              encodeURIComponent('音频文件/') +
+              keyName +
+              '.flac',
+            cover: baseURL + 'covers/jj-%E9%87%8D%E6%8B%BE%E5%BF%AB%E4%B9%90.jpeg',
+            lrc: baseURL + 'lrcs/' + keyName + '.lrc',
           }
           musicList.value.push(musicItem)
           curPlayer.value = musicList.value[0]
         })
       }
     })
-    .catch(err => {
+    .catch((err) => {
       throw new Error(`getFileList:::${err}`)
     })
 }
@@ -74,7 +82,6 @@ onMounted(() => {
   setTimeout(() => getSingleAplayerInstance(), 1000)
 })
 </script>
-
 
 <template>
   <div h100vh w100vw overflow-hidden flex-row>
@@ -86,8 +93,8 @@ onMounted(() => {
     <!-- right -->
     <div h="100%" flex-1 p-10 box-border>
       <div w="80%" relative class="slide-in-fwd-center">
-        <img w50 h50 absolute top-0 left-6 src="../assets/back.png" alt="err">
-        <img w50 h50 absolute top-0 left-0 src="../assets/cover.jpeg" alt="err">
+        <img w50 h50 absolute top-0 left-6 src="../assets/back.png" alt="err" />
+        <img w50 h50 absolute top-0 left-0 src="../assets/cover.jpeg" alt="err" />
         <div absolute right-0>
           <h1 text-8 mb-2>重拾_快乐</h1>
           <h1 text-6 float-right>林俊杰</h1>
@@ -95,8 +102,21 @@ onMounted(() => {
       </div>
       <ul w="85%" mt-55 h="75%">
         <el-scrollbar>
-          <li class="slide-in-fwd-center" :style="{ animationDelay: index / 5 + 's' }" v-for="(music, index) in musicList"
-            :key="index" flex justify-between items-center my-3 hover:bg-green-500:30 transition px-10 py-6 box-content>
+          <li
+            class="slide-in-fwd-center"
+            :style="{ animationDelay: index / 5 + 's' }"
+            v-for="(music, index) in musicList"
+            :key="index"
+            flex
+            justify-between
+            items-center
+            my-3
+            hover:bg-green-500:30
+            transition
+            px-10
+            py-6
+            box-content
+          >
             <div>
               <span @dblclick="playByUrl(index)" cursor-pointer>{{ music.artist }}-{{ music.name }}</span>
               <span ml-5 rounded-1 text-center px-2 color="#000" bg="#e5c894">flac</span>
@@ -107,7 +127,6 @@ onMounted(() => {
             </div>
           </li>
         </el-scrollbar>
-
       </ul>
     </div>
   </div>
@@ -123,10 +142,9 @@ onMounted(() => {
 <style scoped lang="scss">
 /* 动画 */
 .slide-in-fwd-center {
-  -webkit-animation: slide-in-fwd-center 1.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-  animation: slide-in-fwd-center 1.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  -webkit-animation: slide-in-fwd-center 1.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  animation: slide-in-fwd-center 1.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
-
 
 /* ----------------------------------------------
  * Generated by Animista on 2023-5-12 10:50:55
@@ -168,5 +186,3 @@ onMounted(() => {
   }
 }
 </style>
-
-
