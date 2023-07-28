@@ -1,30 +1,37 @@
 <script setup lang="ts">
 // Element Plus 设置中文
+import { usePlayerStore } from './store/player'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
+const playStore = usePlayerStore()
 const locale = zhCn
+
+const Player = ref()
+onMounted(() => {
+  // 初始化radio
+  nextTick(() => {
+    playStore.Player = Player.value
+  })
+})
 </script>
 
 <template>
   <el-config-provider :locale="locale">
-    <div id="app">
+    <div
+      id="app"
+      relative
+      wscreen
+      hscreen
+      color-gray-300:50
+      text-3.5
+      bg="#18181d"
+    >
       <Header />
       <router-view></router-view>
       <!--播放器-->
-      <audio ref="Player" />
+      <audio
+        ref="Player"
+        fixed
+      />
     </div>
   </el-config-provider>
 </template>
-
-<style lang="scss" scoped>
-#app {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  color: $text_color;
-  font-size: $font_size_medium;
-
-  audio {
-    position: fixed;
-  }
-}
-</style>

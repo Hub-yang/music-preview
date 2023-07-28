@@ -14,3 +14,9 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
+
+
+
+interface baseObj {
+  [key: string]: any
+}
