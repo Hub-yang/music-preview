@@ -4,12 +4,12 @@ import { RouteRecordRaw } from 'vue-router';
 const commonRoutes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'index',
+    name: 'Home',
     meta: {
       title: 'paly music',
       icon: '',
     },
-    component: () => import('@/pages/Index.vue'),
+    component: () => import('@/pages/Home.vue'),
   },
 ];
 

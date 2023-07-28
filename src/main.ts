@@ -2,7 +2,6 @@ import App from './App.vue'
 import '@/styles/index.scss'
 import * as ELIcon from '@element-plus/icons-vue'
 import 'virtual:uno.css'
-import 'APlayer/dist/APlayer.min.css';
 
 // 消除全局注册elementplus图标组件的ts警告
 function isValidKey(key: string | number | symbol, object: object): key is keyof typeof object {

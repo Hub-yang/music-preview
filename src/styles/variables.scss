@@ -1,1 +1,16 @@
-$theme-color: #2080F0FF
+$theme-color: #2080F0FF;
+$header_bg_color:rgba(0, 0, 0, 0.3);
+$text_color_active: #fff;
+
+$font_size_small: 12px;
+$font_size_medium:14px;
+$font_size_large: 18px;
+
+$text_color: rgba(255, 255, 255, 0.6);
+
+// 遮罩层颜色
+$mask_color: rgba(0, 0, 0, 0.4);
+
+/* 列表 */
+$list_head_line_color: rgba(255, 255, 255, 0.8);
+$list_item_line_color: rgba(255, 255, 255, 0.1);
