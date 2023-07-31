@@ -6,11 +6,26 @@ const playStore = usePlayerStore()
 const locale = zhCn
 
 const Player = ref()
+nextTick(() => {
+  playStore.Player = Player.value
+})
+
 onMounted(() => {
-  // 初始化radio
-  nextTick(() => {
-    playStore.Player = Player.value
-  })
+  setTimeout(() => {
+    // 移除加载动画
+    let loadDOM = document.querySelector('#appLoading')
+    if (loadDOM) {
+      const animationendFunc = function () {
+        loadDOM!.removeEventListener('animationend', animationendFunc)
+        loadDOM!.removeEventListener('webkitAnimationEnd', animationendFunc)
+        document.body.removeChild(loadDOM!)
+        loadDOM = null
+      }.bind(this)
+      loadDOM.addEventListener('animationend', animationendFunc)
+      loadDOM.addEventListener('webkitAnimationEnd', animationendFunc)
+      loadDOM.classList.add('removeAnimate')
+    }
+  }, 1000)
 })
 </script>
 
@@ -18,20 +33,21 @@ onMounted(() => {
   <el-config-provider :locale="locale">
     <div
       id="app"
-      relative
-      wscreen
-      hscreen
+      max-wscreen
+      max-hscreen
+      overflow-hidden
       color-gray-300:50
       text-3.5
       bg="#18181d"
+      flex="~"
+      flex-col
+      pb3
+      box-border
     >
       <Header />
-      <router-view></router-view>
-      <!--播放器-->
-      <audio
-        ref="Player"
-        fixed
-      />
+      <router-view />
+      <BasePlayBar mx10 />
+      <audio ref="Player" />
     </div>
   </el-config-provider>
 </template>

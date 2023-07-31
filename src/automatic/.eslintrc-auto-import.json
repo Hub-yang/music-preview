@@ -1,6 +1,7 @@
 {
   "globals": {
     "EffectScope": true,
+    "ElMessage": true,
     "acceptHMRUpdate": true,
     "asyncComputed": true,
     "autoResetRef": true,
@@ -28,6 +29,7 @@
     "eagerComputed": true,
     "effectScope": true,
     "extendRef": true,
+    "format": true,
     "formatJsonToUrlParams": true,
     "getActivePinia": true,
     "getCurrentInstance": true,
@@ -68,6 +70,7 @@
     "onStartTyping": true,
     "onUnmounted": true,
     "onUpdated": true,
+    "parseLyric": true,
     "pausableWatch": true,
     "provide": true,
     "reactify": true,

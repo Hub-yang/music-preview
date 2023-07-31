@@ -1,4 +1,5 @@
 import { instanceObject } from "@/types"
+import moment from "moment";
 
 /**
  * JSON转url参数
@@ -13,3 +14,8 @@ export const formatJsonToUrlParams = (data: instanceObject) => {
       .join('&')
     : '';
 };
+
+// 格式化时长
+export function format(time) {
+  return time ? moment(time * 1000).format('m:ss') : ''
+}

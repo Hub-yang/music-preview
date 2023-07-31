@@ -1,6 +1,9 @@
 lockfileVersion: '6.0'
 
 dependencies:
+  '@iconify-json/ph':
+    specifier: ^1.1.5
+    version: 1.1.5
   '@vitejs/plugin-legacy':
     specifier: ^4.0.3
     version: 4.0.3(terser@5.17.3)(vite@3.2.6)
@@ -1369,6 +1372,12 @@ packages:
       '@iconify/types': 2.0.0
     dev: true
 
+  /@iconify-json/ph@1.1.5:
+    resolution: {integrity: sha512-iLXq3nohfGge22gL2tZmQ2WHBKkKkIbGWrkuyC8arckS4PWaONyh4A+uDPtSek9QbYDvi9AE2+NxWkNZhANotA==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: false
+
   /@iconify-json/solar@1.1.1:
     resolution: {integrity: sha512-VN7vPHaUW5cASnm2iN986bwTMGans5zAk1cVYB6nAGDhWjqaBMS6bmYmlpAYpuLk08uMAp2YtLkC23XFQd1zhg==}
     dependencies:
@@ -1377,7 +1386,6 @@ packages:
 
   /@iconify/types@2.0.0:
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
-    dev: true
 
   /@iconify/utils@2.1.5:
     resolution: {integrity: sha512-6MvDI+I6QMvXn5rK9KQGdpEE4mmLTcuQdLZEiX5N+uZB+vc4Yw9K1OtnOgkl8mp4d9X0UrILREyZgF1NUwUt+Q==}

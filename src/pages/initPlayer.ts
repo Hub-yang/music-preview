@@ -1,16 +1,8 @@
 import { playList } from './playList'
-let retry = 1
-export function usePlayer() {
-  const playStore = usePlayerStore()
-  const ele = playStore.Player
-
-  const currentMusic = ref<baseObj>({})
-  const currentProgress = ref(0)
-  const currentTime = ref(0)
-  const musicReady = ref(false)
-  const playlist = ref<baseObj[]>([])
-  const volume = ref(0.8)
-  const isMute = ref(false)
+// let retry = 1
+export function initPlayer() {
+  const { Player, playlist, currentMusic, currentProgress, currentTime, playing } = toRefs(usePlayerStore())
+  const ele = Player.value
 
 
   // 初始化
@@ -26,16 +18,21 @@ export function usePlayer() {
   }
 
   initAudioDuration()
+  // 监测时长获取，如果有空，则执行获取
+  // setInterval(() => {
+  //   checkDurationTime()
+  // }, 2000)
 
+  function checkDurationTime() {
 
-  // 音量控件相关
-  function volumeChange(percent) {
-    percent === 0 ? (isMute.value = true) : (isMute.value = false)
-    volume.value = percent
-    ele.volume = percent
-    // 缓存
-    // setVolume(percent)
+    let hasEmptyDuration = playlist.value.some((item: baseObj) => !item.duration)
+    if (hasEmptyDuration) {
+      // initAudioDuration()
+      // 单独修改没有初始化的元素，否则直接改数组会影响拖拽
+    }
   }
+
+
 
   // 音频缓冲事件
   ele.onprogress = () => {
@@ -54,7 +51,6 @@ export function usePlayer() {
     let timer
     clearTimeout(timer)
     timer = setTimeout(() => {
-      musicReady.value = true
     }, 100)
   }
   // 获取当前播放时间
@@ -112,16 +108,101 @@ export function usePlayer() {
   //   that.setPlaying(false)
   // }
 
-  return {
-    currentMusic,
-    currentProgress,
-    currentTime,
-    musicReady,
-    playlist,
-    volume,
-    isMute,
-    ele,
-    volumeChange
-  }
+
+
+
+
+
+
+
+
+
+
+
+
+  //测试audio回调
+  // ele.onabort = () => {
+  //   console.log("onabort")
+  // }
+
+  // ele.oncanplay = () => {
+  //   console.log("oncanplay")
+  // }
+
+  // ele.oncanplaythrough = () => {
+  //   console.log("oncanplaythrough")
+  // }
+
+  // ele.ondurationchange = () => {
+  //   console.log("ondurationchange")
+  // }
+
+  // ele.onemptied = () => {
+  //   console.log("onemptied")
+  // }
+
+  // ele.onended = () => {
+  //   console.log("onended")
+  // }
+
+  // ele.onerror = () => {
+  //   console.log("onerror")
+  // }
+
+  // ele.onloadeddata = () => {
+  //   console.log("onloadeddata")
+  // }
+
+  // ele.onloadedmetadata = () => {
+  //   console.log("onloadedmetadata")
+  // }
+
+  // ele.onloadstart = () => {
+  //   console.log("onloadstart")
+  // }
+
+  // ele.onpause = () => {
+  //   console.log("onpause")
+  // }
+
+  // ele.onplaying = () => {
+  //   console.log("onplaying")
+  // }
+
+  // ele.onprogress = () => {
+  //   console.log("onprogress")
+  // }
+
+  // ele.onratechange = () => {
+  //   console.log("onratechange")
+  // }
+
+  // ele.onseeked = () => {
+  //   console.log("onseeked")
+  // }
+
+  // ele.onseeking = () => {
+  //   console.log("onseeking")
+  // }
+
+  // ele.onstalled = () => {
+  //   console.log("onstalled")
+  // }
+
+  // ele.onsuspend = () => {
+  //   console.log("onsuspend")
+  // }
+
+  // ele.ontimeupdate = () => {
+  //   console.log("ontimeupdate")
+  // }
+
+  // ele.onvolumechange = () => {
+  //   console.log("onvolumechange")
+  // }
+
+  // ele.onwaiting = () => {
+  //   console.log("onwaiting")
+  // }
 }
 

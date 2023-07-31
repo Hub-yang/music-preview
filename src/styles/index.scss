@@ -1,6 +1,18 @@
 @import '@/styles/nprogress.scss';
 @import "@/styles/normalize.scss";
 
+
+// vue-traisition
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+
 html,
 body,
 #app {

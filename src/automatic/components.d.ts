@@ -9,8 +9,10 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     BaseIcon: typeof import('./../components/BaseIcon.vue')['default']
     BaseLyric: typeof import('./../components/BaseLyric.vue')['default']
+    BasePlayBar: typeof import('./../components/BasePlayBar.vue')['default']
     BaseProgress: typeof import('./../components/BaseProgress.vue')['default']
     BaseVolume: typeof import('./../components/BaseVolume.vue')['default']
+    BaseWeatherCard: typeof import('./../components/BaseWeatherCard.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCol: typeof import('element-plus/es')['ElCol']
     ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
@@ -18,6 +20,7 @@ declare module '@vue/runtime-core' {
     ElRow: typeof import('element-plus/es')['ElRow']
     ElScroll: typeof import('element-plus/es')['ElScroll']
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
+    ElSkeleton: typeof import('element-plus/es')['ElSkeleton']
     Header: typeof import('./../components/Header.vue')['default']
     Lyric: typeof import('./../components/lyric.vue')['default']
     README: typeof import('./../components/README.md')['default']

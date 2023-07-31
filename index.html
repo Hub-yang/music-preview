@@ -3,24 +3,144 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/icon.svg" />
   <link rel="stylesheet" href="//at.alicdn.com/t/font_1367495_eza6utwbiqn.css" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- google-font -->
+  <link href="https://fonts.font.im/css?family=Quicksand" rel="stylesheet">
+
+
+  <style>
+    #appLoading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1996;
+      width: 100%;
+      height: 100%;
+      font-size: 20px;
+      /* background: rgba(255, 255, 255, 1); */
+      background-color: #18181d;
+    }
+
+    #appLoading.removeAnimate {
+      animation: removeAnimate 0.3s 0.5s 1 both;
+    }
+
+    #appLoading .loader {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5em;
+      height: 5em;
+      transform: translate(-50%, -50%) rotate(165deg);
+    }
+
+    #appLoading .loader::before,
+    #appLoading .loader::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: block;
+      width: 1em;
+      height: 1em;
+      border-radius: 0.5em;
+      transform: translate(-50%, -50%);
+    }
+
+    #appLoading .loader::before {
+      animation: before 2s infinite;
+    }
+
+    #appLoading .loader::after {
+      animation: after 2s infinite;
+    }
+
+    @keyframes before {
+      0% {
+        width: 1em;
+        box-shadow: 2em -1em rgba(225, 20, 98, 0.75),
+          -2em 1em rgba(111, 202, 220, 0.75);
+      }
+
+      35% {
+        width: 5em;
+        box-shadow: 0 -1em rgba(225, 20, 98, 0.75),
+          0 1em rgba(111, 202, 220, 0.75);
+      }
+
+      70% {
+        width: 1em;
+        box-shadow: -2em -1em rgba(225, 20, 98, 0.75),
+          2em 1em rgba(111, 202, 220, 0.75);
+      }
+
+      100% {
+        box-shadow: 2em -1em rgba(225, 20, 98, 0.75),
+          -2em 1em rgba(111, 202, 220, 0.75);
+      }
+    }
+
+    @keyframes after {
+      0% {
+        height: 1em;
+        box-shadow: 1em 2em rgba(61, 184, 143, 0.75),
+          -1em -2em rgba(233, 169, 32, 0.75);
+      }
+
+      35% {
+        height: 5em;
+        box-shadow: 1em 0 rgba(61, 184, 143, 0.75),
+          -1em 0 rgba(233, 169, 32, 0.75);
+      }
+
+      70% {
+        height: 1em;
+        box-shadow: 1em -2em rgba(61, 184, 143, 0.75),
+          -1em 2em rgba(233, 169, 32, 0.75);
+      }
+
+      100% {
+        box-shadow: 1em 2em rgba(61, 184, 143, 0.75),
+          -1em -2em rgba(233, 169, 32, 0.75);
+      }
+    }
+
+    @keyframes removeAnimate {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+      }
+    }
+  </style>
 </head>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-T1H5LF72T0"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag() { dataLayer.push(arguments); }
-  gtag('js', new Date());
-
-  gtag('config', 'G-T1H5LF72T0');
-</script>
+<script src="/snap.svg-min.js"></script>
+<script src="/TweenMax.min.js"></script>
 
 <body>
+  <div id="appLoading">
+    <div class="loader"></div>
+  </div>
   <div id="app"></div>
   <script type="module" src="/src/main.ts"></script>
+
+
+  <script>
+    // document.onreadystatechange = loadLoading
+
+    // function loadLoading() {
+    //   if (document.readyState == "complete") {
+    //     document.body.removeChild(
+    //       document.getElementById("appLoading")
+    //     )
+    //   }
+    // }
+  </script>
 </body>
 
 </html>

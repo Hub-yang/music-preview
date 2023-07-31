@@ -6,14 +6,12 @@ export default {
 <script setup lang="ts">
 interface Props {
   lyric: baseObj[]
-  nolyric: boolean
   lyricIndex: number
   currentMusic: baseObj
 }
 
 const props = withDefaults(defineProps<Props>(), {
   lyric: () => [],
-  nolyric: false,
   lyricIndex: 0,
   currentMusic: () => ({})
 })
@@ -60,9 +58,12 @@ function clacTop() {
     flex="~"
     flex-col
     items-center
+    justify-between
   >
     <!--封面-->
-    <dl text-center>
+    <dl
+      text-center
+    >
       <dt
         relative
         w60
@@ -79,24 +80,46 @@ function clacTop() {
           :src="musicPicUrl"
         />
       </dt>
-      <template v-if="currentMusic.id">
-        <dd>歌曲名：{{ currentMusic.name }}</dd>
-        <dd>歌手名：{{ currentMusic.singer }}</dd>
-        <dd>专辑名：{{ currentMusic.album }}</dd>
-      </template>
+      <div
+        v-if="currentMusic.id"
+        flex="~"
+        flex-col
+        items-start
+      >
+        <dd
+          text-5
+          font-bold
+          color-white:90
+          mb2
+        >
+          " {{ currentMusic.name }} "
+        </dd>
+        <dd
+          text-3.5
+          color-white:90
+          mb1
+        >
+          {{ currentMusic.singer }}
+        </dd>
+        <dd
+          text-3.5
+          color-gray
+        >
+          {{ currentMusic.album }}
+        </dd>
+      </div>
     </dl>
     <!--歌词-->
     <div
       ref="musicLyric"
       class="music-lyric"
+      mb3
     >
       <div
         :style="lyricTop"
         class="music-lyric-items"
       >
         <p v-if="!currentMusic.id">还没有播放音乐哦！</p>
-        <p v-else-if="nolyric">暂无歌词！</p>
-
         <template v-else-if="lyric.length > 0">
           <p
             v-for="(item, index) in lyric"
