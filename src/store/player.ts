@@ -13,6 +13,7 @@ export const usePlayerStore = defineStore("player", () => {
   const currentTime = ref(0)
   const volume = ref(0.8)
   const isMute = ref(false)
+  const disabled = ref(true)
 
   // actions
   function prev() {
@@ -73,6 +74,7 @@ export const usePlayerStore = defineStore("player", () => {
     isMute,
     playing,
     playMode,
+    disabled,
     prev,
     play,
     next

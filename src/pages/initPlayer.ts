@@ -1,17 +1,63 @@
-import { playList } from './playList'
+import { nanoid } from 'nanoid';
+// import { playList } from './playList'
+import { getFileList } from "@/api/modules/index"
+
 // let retry = 1
 export function initPlayer() {
-  const { Player, playlist, currentMusic, currentProgress, currentTime, playing } = toRefs(usePlayerStore())
-  const ele = Player.value;
+  const playerStore = usePlayerStore()
+  // { Player, playlist, currentMusic, currentProgress, currentTime } = 
+  const ele = playerStore.Player;
+  let timerId
+
+  // 格式化歌曲名、歌手
+  function formatMusicKey(key: string) {
+    let musickey = key.split("/")[1].replace('.flac', '').split('-')
+    return {
+      singer: musickey[0],
+      name: musickey[1]
+    }
+  }
 
   // 初始化播放列表
-  (function () {
-    playlist.value = playList.value.map((item: baseObj, idx) => {
-      const res = initAudioDuration(item)
-      res.isLoved = false
-      return res
-    })
-  })()
+  function initPlayerList() {
+    getFileList(encodeURIComponent("音频文件/"))
+      .then((res) => {
+        if (res && res.code == 200) {
+          res.data.shift()
+          res.data.forEach((item) => {
+            // 预览使用七牛云，注意存储时名称和cos中的保持一致，否则获取不到对应文件
+            let baseURL = 'https://mochenghualei.com.cn/'
+            let keyName = encodeURIComponent(item.Key.split('/')[1].replace('.flac', '').replace('..lrc', ''))
+            let curUrl = 'https://personal-web-1308697453.cos.ap-beijing.myqcloud.com/' +
+              encodeURIComponent('音频文件/') +
+              keyName +
+              '.flac'
+            let musicItem = {
+              ...formatMusicKey(item.Key),
+              id: nanoid(),
+              key: item.Key,
+              album: '重拾_快乐',
+              isLoved: false,
+              lyric: baseURL + 'lrcs/' + keyName + '.lrc',
+              image: baseURL + 'covers/jj-%E9%87%8D%E6%8B%BE%E5%BF%AB%E4%B9%90.jpeg',
+              url: curUrl
+            }
+            playerStore.playlist.push(initAudioDuration(musicItem))
+          })
+
+          // 开启定时器，监测时长获取情况，全部获取则终止
+          timerId = setInterval(() => {
+            checkDurationTime()
+          }, 2000)
+        }
+      })
+      .catch((err) => {
+        throw new Error('getFileList():::' + err)
+      })
+  }
+
+
+  initPlayerList()
 
   // 初始化时长
   function initAudioDuration(item) {
@@ -23,13 +69,14 @@ export function initPlayer() {
     return item
   }
 
-  // 监测时长获取，如果有空，则执行获取
-  setInterval(() => {
-    checkDurationTime()
-  }, 2000)
 
   function checkDurationTime() {
-    playlist.value.forEach((item) => {
+    if (playerStore.playlist.every((item) => item.duration)) {
+      clearInterval(timerId)
+      timerId = undefined
+      return false
+    }
+    playerStore.playlist.forEach((item) => {
       if (!item.duration) {
         initAudioDuration(item)
       }
@@ -40,11 +87,11 @@ export function initPlayer() {
   ele.onprogress = () => {
     try {
       if (ele.buffered.length > 0) {
-        const duration = currentMusic.value.duration
+        const duration = playerStore.currentMusic.duration
         let buffered = 0
         ele.buffered.end(0)
         buffered = ele.buffered.end(0) > duration ? duration : ele.buffered.end(0)
-        currentProgress.value = buffered / duration
+        playerStore.currentProgress = buffered / duration
       }
     } catch (e) { }
   }
@@ -57,7 +104,7 @@ export function initPlayer() {
   }
   // 获取当前播放时间
   ele.ontimeupdate = () => {
-    currentTime.value = ele.currentTime
+    playerStore.currentTime = ele.currentTime
   }
   // 当前音乐播放完毕
   // ele.onended = () => {
@@ -77,13 +124,10 @@ export function initPlayer() {
   //     // that.$mmToast(toastText)
   //     // that.next(true)
   //   } else {
-  //     // eslint-disable-next-line no-console
-  //     console.log('重试一次')
   //     retry -= 1
   //     ele.url = that.currentMusic.url
   //     ele.load()
   //   }
-  //   // console.log('播放出错啦！')
   // }
   // 音乐进度拖动大于加载时重载音乐
   // ele.onstalled = () => {
@@ -124,87 +168,66 @@ export function initPlayer() {
 
   //测试audio回调
   // ele.onabort = () => {
-  //   console.log("onabort")
   // }
 
   // ele.oncanplay = () => {
-  //   console.log("oncanplay")
   // }
 
   // ele.oncanplaythrough = () => {
-  //   console.log("oncanplaythrough")
   // }
 
   // ele.ondurationchange = () => {
-  //   console.log("ondurationchange")
   // }
 
   // ele.onemptied = () => {
-  //   console.log("onemptied")
   // }
 
   // ele.onended = () => {
-  //   console.log("onended")
   // }
 
   // ele.onerror = () => {
-  //   console.log("onerror")
   // }
 
   // ele.onloadeddata = () => {
-  //   console.log("onloadeddata")
   // }
 
   // ele.onloadedmetadata = () => {
-  //   console.log("onloadedmetadata")
   // }
 
   // ele.onloadstart = () => {
-  //   console.log("onloadstart")
   // }
 
   // ele.onpause = () => {
-  //   console.log("onpause")
   // }
 
   // ele.onplaying = () => {
-  //   console.log("onplaying")
   // }
 
   // ele.onprogress = () => {
-  //   console.log("onprogress")
   // }
 
   // ele.onratechange = () => {
-  //   console.log("onratechange")
   // }
 
   // ele.onseeked = () => {
-  //   console.log("onseeked")
   // }
 
   // ele.onseeking = () => {
-  //   console.log("onseeking")
   // }
 
   // ele.onstalled = () => {
-  //   console.log("onstalled")
   // }
 
   // ele.onsuspend = () => {
-  //   console.log("onsuspend")
   // }
 
   // ele.ontimeupdate = () => {
-  //   console.log("ontimeupdate")
   // }
 
   // ele.onvolumechange = () => {
-  //   console.log("onvolumechange")
   // }
 
   // ele.onwaiting = () => {
-  //   console.log("onwaiting")
   // }
 }
 

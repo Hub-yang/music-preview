@@ -12,12 +12,18 @@ const btnList = ref([
 ])
 
 function handlerBtnClick(idx: number, item: string) {
+  playerStore.disabled = false
+
   btnList.value.forEach((item) => (item.active = false))
   btnList.value[idx].active = true
   if (item === '我喜欢') {
     playerStore.playlist = playerStore.lovedList
+
     playerStore.curListMode = 'loved'
   }
+  setTimeout(() => {
+    playerStore.disabled = true
+  }, 0)
 }
 </script>
 
