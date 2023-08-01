@@ -4,6 +4,7 @@ import comma from '@/assets/svg/comma.svg'
 import { initPlayer } from './initPlayer'
 import { format } from '@/utils/format'
 import { parseLyric } from '@/utils/index'
+import { getLrcFile } from '@/api/modules'
 initPlayer()
 const playerStore = usePlayerStore()
 const ele = playerStore.Player
@@ -93,8 +94,35 @@ watch(
   }
 )
 
-function _getLyric() {
-  lyric.value = parseLyric(playerStore.currentMusic.lyric)
+async function _getLyric() {
+  const fileContext = await getLrcFile(playerStore.currentMusic.lyric)
+  lyric.value = parseLyric(fileContext)
+}
+
+//切换喜欢状态，更新我喜欢列表
+function handlerSwitchLovedState(item: baseObj) {
+  const lovedList = playerStore.lovedList
+  if (playerStore.curListMode === 'random') {
+    if (!item.isLoved) {
+      item.isLoved = true
+      lovedList.push(item)
+    } else {
+      item.isLoved = false
+      let curIdx = lovedList.findIndex((el) => el.id === item.id)
+      lovedList.splice(curIdx, 1)
+    }
+  } else if (playerStore.curListMode === 'loved') {
+    let curIdx = playerStore.playlist.findIndex((el) => el.id === item.id)
+    playerStore.playlist.splice(curIdx, 1)
+    lovedList.splice(curIdx, 1)
+  }
+}
+
+function handlerScrollAnchorMusic() {
+  const el = document.querySelector('.on')
+  el?.scrollIntoView({
+    behavior: 'smooth'
+  })
 }
 </script>
 
@@ -335,6 +363,26 @@ function _getLyric() {
         播放列表
       </div>
 
+      <div
+        w7
+        h7
+        rounded-5
+        absolute
+        bottom-5
+        right-58
+        z-1
+        cursor-pointer
+        flex-row
+        text-4.6
+        bg-purple:20
+        @click="handlerScrollAnchorMusic"
+      >
+        <div
+          color="#6477f4"
+          i-material-symbols-my-location
+        />
+      </div>
+
       <el-scrollbar>
         <div
           v-if="playerStore.playlist.length > 0"
@@ -417,14 +465,14 @@ function _getLyric() {
                 </div>
                 <!-- 歌手 -->
                 <span
-                  min-w40
-                  font-bold
+                  min-w30
+                  font-500
                   >{{ item.singer }}</span
                 >
                 <!-- 专辑 -->
                 <span
-                  min-w40
-                  font-bold
+                  min-w30
+                  font-500
                   >{{ item.album }}</span
                 >
                 <!-- 时长 -->
@@ -437,7 +485,7 @@ function _getLyric() {
                 <!-- 操作 -->
                 <div
                   flex-row
-                  min-w40
+                  min-w50
                 >
                   <div
                     class="hover"
@@ -448,7 +496,7 @@ function _getLyric() {
                     bg-white:10
                     rounded
                     flex-row
-                    text-4
+                    text-3
                     @click.stop="handlerItemClick(item, idx)"
                   >
                     <Transition mode="out-in">
@@ -457,21 +505,45 @@ function _getLyric() {
                           playerStore.playing &&
                           playerStore.currentMusic.id === item.id
                         "
-                        i-mdi-pause
+                        i-iconamoon-player-pause-fill
                         color="#5d72f6"
                       />
                       <div
                         v-else
-                        i-mdi-play
+                        i-iconamoon-player-play-fill
                         color="#5d72f6"
                       />
                     </Transition>
                   </div>
                   <div
+                    cursor-pointer
                     ml-6
-                    class="hover"
                     h7
                     w7
+                    flex-row
+                    text-4
+                    @click.stop="handlerSwitchLovedState(item)"
+                  >
+                    <Transition mode="out-in">
+                      <div
+                        v-if="item.isLoved"
+                        color="#5d72f6"
+                        i-material-symbols-favorite-rounded
+                      />
+                      <div
+                        v-else
+                        color="#5d72f6"
+                        i-material-symbols-favorite-outline-rounded
+                      />
+                    </Transition>
+                  </div>
+                  <div
+                    cursor-pointer
+                    ml-6
+                    h7
+                    w7
+                    hover:color-white
+                    hover:transition
                     flex-row
                     text-4
                     @click.stop="handlerDownLoadItem(item, idx)"

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const playerStore = usePlayerStore()
 const btnList = ref([
   {
     name: '我喜欢',
@@ -10,9 +11,13 @@ const btnList = ref([
   }
 ])
 
-function handlerBtnClick(idx: number) {
+function handlerBtnClick(idx: number, item: string) {
   btnList.value.forEach((item) => (item.active = false))
   btnList.value[idx].active = true
+  if (item === '我喜欢') {
+    playerStore.playlist = playerStore.lovedList
+    playerStore.curListMode = 'loved'
+  }
 }
 </script>
 
@@ -42,17 +47,34 @@ function handlerBtnClick(idx: number) {
       <span>Oh My Music !</span>
     </div>
     <!-- 按钮 -->
-    <div>
-      <span
+    <div
+      ml10
+      hfull
+      flex="~"
+      items-center
+      gap-3
+    >
+      <div
         :class="[btn.active ? 'active' : '']"
         v-for="(btn, idx) in btnList"
         :key="idx"
-        @click="handlerBtnClick(idx)"
+        @click="handlerBtnClick(idx, btn.name)"
         hover:color="#6477f4"
         hover:transition
         color-white:90
-        >{{ btn.name }}</span
+        flex="~"
+        items-center
+        gap1
       >
+        <span
+          text-3
+          inline-block
+          i-mdi-playlist-music
+        ></span>
+        <span text-3.5>
+          {{ btn.name }}
+        </span>
+      </div>
     </div>
   </header>
 </template>

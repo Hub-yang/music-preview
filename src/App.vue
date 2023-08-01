@@ -9,24 +9,6 @@ const Player = ref()
 nextTick(() => {
   playStore.Player = Player.value
 })
-
-onMounted(() => {
-  setTimeout(() => {
-    // 移除加载动画
-    let loadDOM = document.querySelector('#appLoading')
-    if (loadDOM) {
-      const animationendFunc = function () {
-        loadDOM!.removeEventListener('animationend', animationendFunc)
-        loadDOM!.removeEventListener('webkitAnimationEnd', animationendFunc)
-        document.body.removeChild(loadDOM!)
-        loadDOM = null
-      }.bind(this)
-      loadDOM.addEventListener('animationend', animationendFunc)
-      loadDOM.addEventListener('webkitAnimationEnd', animationendFunc)
-      loadDOM.classList.add('removeAnimate')
-    }
-  }, 1000)
-})
 </script>
 
 <template>

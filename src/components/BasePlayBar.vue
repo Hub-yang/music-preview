@@ -4,9 +4,8 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import singleLoop from '@/assets/svg/singleLoop.svg'
-import listLoop from '@/assets/svg/listLoop.svg'
 import { format } from '@/utils/format'
+import { StyleValue } from 'vue'
 
 const playerStore = usePlayerStore()
 function handlerChangeLoopMode() {
@@ -44,6 +43,12 @@ function volumeChange(percent) {
   // 缓存
   // setVolume(percent)
 }
+
+const btnStyle = computed<StyleValue>(() => ({
+  'pointer-events': playerStore.currentMusic.id ? 'auto' : 'none',
+  cursor: playerStore.currentMusic.id ? 'pointer' : '',
+  opacity: playerStore.currentMusic.id ? '1' : '.5'
+}))
 </script>
 
 <template>
@@ -64,13 +69,14 @@ function volumeChange(percent) {
       pl10
     >
       <div
-        cursor-pointer
+        :style="btnStyle"
         i-solar-skip-previous-bold
         title="上一曲 Ctrl + Left"
         @click="playerStore.prev"
       />
 
       <div
+        :style="btnStyle"
         cursor-pointer
         rounded-3
         w11
@@ -84,17 +90,18 @@ function volumeChange(percent) {
         <Transition mode="out-in">
           <div
             v-if="playerStore.playing"
-            i-mdi-pause
+            i-iconamoon-player-pause-fill
             text-5
           />
           <div
             v-else
-            i-mdi-play
+            i-iconamoon-player-play-fill
             text-5
           />
         </Transition>
       </div>
       <div
+        :style="btnStyle"
         cursor-pointer
         i-solar-skip-next-bold
         title="下一曲 Ctrl + Right"
@@ -142,6 +149,7 @@ function volumeChange(percent) {
       </div>
       <!-- 进度条 -->
       <base-progress
+        :style="btnStyle"
         :percent="percentMusic"
         :percent-progress="playerStore.currentProgress"
         @percentChange="progressMusic"
@@ -155,15 +163,17 @@ function volumeChange(percent) {
       @click="handlerChangeLoopMode"
     >
       <Transition mode="out-in">
-        <list-loop
+        <div
           v-if="playerStore.playMode === 'loopall'"
-          w6
-          h6
+          i-iconamoon-playlist-repeat-list-bold
+          w5
+          h5
         />
-        <single-loop
+        <div
           v-else-if="playerStore.playMode === 'loopone'"
-          w6
-          h6
+          i-iconamoon-playlist-repeat-song-bold
+          w5
+          h5
         />
       </Transition>
     </div>

@@ -1,6 +1,16 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
+  '@iconify-json/iconamoon':
+    specifier: ^1.1.0
+    version: 1.1.0
+  '@iconify-json/material-symbols':
+    specifier: ^1.1.53
+    version: 1.1.53
   '@iconify-json/ph':
     specifier: ^1.1.5
     version: 1.1.5
@@ -1365,6 +1375,18 @@ packages:
   /@humanwhocodes/object-schema@1.2.1:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
+
+  /@iconify-json/iconamoon@1.1.0:
+    resolution: {integrity: sha512-AiE9xVA/RwE3cniYejcaOaQIxx7P5LMDoJlp6Ey2/4k5gI1GZ6rxbKFvgZsEpG3CauoAr3PDetEj55HGSNhTyw==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: false
+
+  /@iconify-json/material-symbols@1.1.53:
+    resolution: {integrity: sha512-dTRCCrNForVyGU0zId8+i9KrXraN5yCgigg+qC4lbXyeaY15hEt4Wt/t8Sg/Znf/1mMmu3rxxpZGWMpShYssTg==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: false
 
   /@iconify-json/mdi@1.1.53:
     resolution: {integrity: sha512-qG72Tc9Bd4w7fha+kMEySVTbH4Obgb9xA1mQl+WReFhtZ3PjcVpIWLgZGTewuIfZY8RAbd8zfAqhZ7qEYZWrhg==}

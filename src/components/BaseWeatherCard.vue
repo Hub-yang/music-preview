@@ -121,11 +121,13 @@ let weather = [
   { type: 'wind', name: 'Windy', title: '多云' },
   { type: 'wind', name: 'Windy', title: '阴' },
   { type: 'rain', name: 'Rain', title: '阴雨' },
-  { type: 'rain', name: 'Rain', title: '小雨' },
-  { type: 'rain', name: 'Rain', title: '大雨' },
   { type: 'rain', name: 'Rain', title: '雨' },
+  { type: 'rain', name: 'Rain', title: '小雨' },
+  { type: 'rain', name: 'Rain', title: '中雨' },
+  { type: 'rain', name: 'Rain', title: '大雨' },
   { type: 'thunder', name: 'Storms', title: '雷阵雨' },
   { type: 'thunder', name: 'Storms', title: '暴雨' },
+  { type: 'thunder', name: 'Storms', title: '大暴雨' },
   { type: 'sun', name: 'Sunny', title: '晴' }
 ]
 

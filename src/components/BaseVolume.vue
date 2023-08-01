@@ -50,11 +50,21 @@ function handlerVolumeChange(percent) {
     >
       <div
         v-if="isMute"
-        i-mdi-volume-off
+        i-iconamoon-volume-off-duotone
+        w6
+        h6
+      />
+      <div
+        v-else-if="volumeProgress >= 0.7 && volumeProgress <= 1"
+        i-iconamoon-volume-up-duotone
+        w6
+        h6
       />
       <div
         v-else
-        i-mdi-volume
+        i-iconamoon-volume-down-duotone
+        w6
+        h6
       />
     </div>
     <div />

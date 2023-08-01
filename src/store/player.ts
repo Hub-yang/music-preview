@@ -1,7 +1,11 @@
 export const usePlayerStore = defineStore("player", () => {
   // state
   const Player = ref<any>(null)
+  // 基础播放列表
   const playlist = ref<baseObj[]>([])
+  // 我喜欢列表
+  const lovedList = ref<baseObj[]>([])
+  const curListMode = ref("random")
   const currentMusic = ref<baseObj>({})
   const playMode = ref('loopall')
   const playing = ref(false)
@@ -60,6 +64,8 @@ export const usePlayerStore = defineStore("player", () => {
   return {
     Player,
     playlist,
+    lovedList,
+    curListMode,
     currentMusic,
     currentProgress,
     currentTime,

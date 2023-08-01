@@ -123,9 +123,9 @@
 <script src="/TweenMax.min.js"></script>
 
 <body>
-  <div id="appLoading">
+  <!-- <div id="appLoading">
     <div class="loader"></div>
-  </div>
+  </div> -->
   <div id="app"></div>
   <script type="module" src="/src/main.ts"></script>
 
@@ -140,6 +140,25 @@
     //     )
     //   }
     // }
+
+    // 清除加载动画
+    (() => {
+      setTimeout(() => {
+        // 移除加载动画
+        let loadDOM = document.querySelector('#appLoading')
+        if (loadDOM) {
+          const animationendFunc = function () {
+            loadDOM.removeEventListener('animationend', animationendFunc)
+            loadDOM.removeEventListener('webkitAnimationEnd', animationendFunc)
+            document.body.removeChild(loadDOM)
+            loadDOM = null
+          }.bind(this)
+          loadDOM.addEventListener('animationend', animationendFunc)
+          loadDOM.addEventListener('webkitAnimationEnd', animationendFunc)
+          loadDOM.classList.add('removeAnimate')
+        }
+      }, 1000)
+    })()
   </script>
 </body>
 
