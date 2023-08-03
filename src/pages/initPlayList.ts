@@ -1,0 +1,79 @@
+import { getFileList } from "@/api/modules"
+import { nanoid } from "nanoid"
+export function usePlayList() {
+  let allPLayeListTemp: baseObj[] = []
+  let timerId
+  const playerStore = usePlayerStore()
+
+  const albumList = ['周杰伦/最伟大的作品', '林俊杰/重拾_快乐']
+  const baseURL = 'https://mochenghualei.com.cn/'
+  Promise.all([getFileList('audios/周杰伦/'), getFileList('audios/林俊杰/')]).then((res) => {
+    const listMap = { ...res.map(item => { item.data.shift(); return item.data }) }
+    albumList.forEach((_, idx) => {
+      const curList = initListItem(listMap[idx], albumList[idx])
+      allPLayeListTemp.push(...curList)
+    })
+    handlerDuration()
+  })
+
+
+  function handlerDuration() {
+    timerId = setInterval(() => checkDurationTime(), 100)
+  }
+
+  // 初始化时长
+  function initAudioDuration(item) {
+    const audioElement = new Audio(item.url)
+    audioElement.onloadeddata = () => {
+      item.duration = audioElement.duration
+    }
+    audioElement.remove()
+    return item
+  }
+
+  function checkDurationTime() {
+    if (allPLayeListTemp.every((item) => item.duration)) {
+      clearInterval(timerId)
+      timerId = undefined
+      playerStore.playlist = playerStore.allPlayList = allPLayeListTemp
+      return true
+    }
+    allPLayeListTemp.forEach((item) => {
+      if (!item.duration) {
+        item = initAudioDuration(item)
+      }
+    })
+  }
+
+  // 格式化歌曲名、歌手
+  function formatMusicKey(key: string) {
+    let musickey = key.split("/")[2].replace('.flac', '').split('-')
+    return {
+      singer: musickey[0],
+      name: musickey[1]
+    }
+  }
+
+
+  function initListItem(curList: baseObj[], album) {
+    let temp: baseObj[] = []
+    curList.forEach((item) => {
+      const Key = item.key
+      let keyName = encodeURI(item.key.split('/')[2].replace('.flac', ''))
+      let curUrl = baseURL + encodeURI(Key)
+      let musicItem = {
+        ...formatMusicKey(Key),
+        id: nanoid(),
+        key: Key,
+        album: album.split('/')[1],
+        isLoved: false,
+        lyric: baseURL + `lrcs/${keyName}.lrc`,
+        image: baseURL + `covers/${encodeURI(album)}.jpg`,
+        url: curUrl
+      }
+
+      temp.push(musicItem)
+    })
+    return temp
+  }
+}

@@ -1,9 +1,11 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
 import showCodeMessage from './code'
 import { instanceObject } from "@/types"
+import { ElMessage } from 'element-plus'
 
 
-const baseURL = import.meta.env.DEV ? import.meta.env.VITE_APP_BASE_API : import.meta.env.VITE_APP_REQUEST_API + import.meta.env.VITE_APP_TRUE_API
+// const baseURL = import.meta.env.DEV ? import.meta.env.VITE_APP_BASE_API : import.meta.env.VITE_APP_REQUEST_API + import.meta.env.VITE_APP_TRUE_API
+const baseURL = "http://localhost:3334"
 // 创建实例
 const axiosInstance: AxiosInstance = axios.create({
   baseURL,

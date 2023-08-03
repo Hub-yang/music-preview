@@ -1,12 +1,10 @@
 import service from '../request'
 
-
-
 /**
  * 获取对象列表
  * @author mocheng
  * @date 2023-05-10
- * @param {string} prefix:想要获取的对象列表的key
+ * @param {string} prefix:列表前缀
  */
 export const getFileList = (query: string) => {
   return service.get(`/getFileList?prefix=${query}`)

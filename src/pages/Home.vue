@@ -4,10 +4,10 @@ import comma from '@/assets/svg/comma.svg'
 import { initPlayer } from './initPlayer'
 import { format } from '@/utils/format'
 import { parseLyric } from '@/utils/index'
-import { getLrcFile, getPreUrl } from '@/api/modules'
-initPlayer()
+import { getLrcFile, download } from '@/api/modules'
 const playerStore = usePlayerStore()
 const ele = playerStore.Player
+initPlayer()
 
 watch(
   () => playerStore.lovedList,
@@ -33,11 +33,14 @@ function handlerItemClick(item: baseObj, idx: number) {
 
 // 下载
 function handlerDownLoadItem(item) {
-  getPreUrl(encodeURIComponent(item.key)).then((res) => {
+  const key = encodeURI(item.key)
+  download(encodeURIComponent(key)).then((res) => {
     if (res && res.code == 200) {
+      const url = res.data
       const a = document.createElement('a')
       a.setAttribute('download', item.key)
-      a.setAttribute('href', res.url)
+      a.setAttribute('href', url)
+      a.setAttribute('target', '_blank')
       a.click()
     }
   })
@@ -149,6 +152,31 @@ function handlerScrollAnchorMusic() {
     behavior: 'smooth'
   })
 }
+
+// 切换列表
+function toggleList(singer: string) {
+  playerStore.disabled = false
+  playerStore.curListMode = 'random'
+
+  let tempList: baseObj[] = []
+  playerStore.allPlayList.forEach((item) => {
+    if (item.singer === singer) {
+      tempList.push(item)
+    }
+  })
+
+  setTimeout(() => {
+    playerStore.disabled = true
+    playerStore.playlist = tempList
+  }, 0)
+}
+
+// 蒙层背景
+const picUrl = computed(() => {
+  return playerStore.currentMusic.id && playerStore.currentMusic.image
+    ? `url(${playerStore.currentMusic.image})`
+    : 'transparent'
+})
 </script>
 
 <template>
@@ -191,6 +219,7 @@ function handlerScrollAnchorMusic() {
         >
           <el-col :span="14">
             <div
+              @click="toggleList('林俊杰')"
               cursor-pointer
               h30
               bg="#516988"
@@ -255,6 +284,7 @@ function handlerScrollAnchorMusic() {
           </el-col>
           <el-col :span="14">
             <div
+              @click="toggleList('周杰伦')"
               cursor-pointer
               h30
               bg="#223f44"
@@ -416,7 +446,7 @@ function handlerScrollAnchorMusic() {
           px-5
           overflow-hidden
         >
-          <draggable
+          <!-- <draggable
             class="list-group"
             tag="transition-group"
             :component-data="{
@@ -430,159 +460,165 @@ function handlerScrollAnchorMusic() {
             @end="drag = false"
             item-key="order"
           >
-            <template #item="{ element: item, index: idx }">
-              <div
-                :class="[
-                  playerStore.playing && playerStore.currentMusic.id === item.id
-                    ? 'on'
-                    : '',
-                  !item.isLoved && playerStore.curListMode == 'loved'
-                    ? 'slit-out-horizontal'
-                    : ''
-                ]"
-                hover:bg-green-900:40
-                hover:transition-all
-                transition-all
-                flex="~"
-                wfull
-                h18
-                rounded-1
-                line-height-18
-                text-3.5
-                @dblclick="handlerItemClick(item, idx)"
+          <template #item="{ element: item, index: idx }"> -->
+          <div
+            v-for="(item, idx) in playerStore.playlist"
+            :key="idx"
+            :class="[
+              playerStore.playing && playerStore.currentMusic.id === item.id
+                ? 'on'
+                : '',
+              !item.isLoved && playerStore.curListMode == 'loved'
+                ? 'slit-out-horizontal'
+                : ''
+            ]"
+            hover:bg-green-900:40
+            hover:transition-all
+            hover:ease
+            transition-all
+            ease
+            flex="~"
+            wfull
+            h18
+            rounded-1
+            line-height-18
+            text-3.5
+            @dblclick="handlerItemClick(item, idx)"
+          >
+            <!-- 编号 -->
+            <span
+              class="list-img"
+              block
+              min-w10
+              text-center
+              >{{ idx + 1 }}</span
+            >
+            <!-- 图片 -->
+            <div
+              flex-row
+              mr2
+            >
+              <img
+                rounded-2
+                w12
+                h12
+                :src="item.image"
+                :alt="item.name"
+              />
+            </div>
+            <!-- 歌曲名+标识 -->
+            <div
+              flex-col-center
+              items-start
+              gap-1.5
+              line-height-none
+              flex-1
+            >
+              <span font-bold>{{ item.name }}</span>
+              <span
+                rounded
+                bg="#dec998"
+                color="#050506"
+                text-.1
+                font-bold
+                px1
+                py.3
+                >flac</span
               >
-                <!-- 编号 -->
-                <span
-                  class="list-img"
-                  block
-                  min-w10
-                  text-center
-                  >{{ idx + 1 }}</span
-                >
-                <!-- 图片 -->
-                <div
-                  flex-row
-                  mr2
-                >
-                  <img
-                    rounded-2
-                    w12
-                    h12
-                    :src="item.image"
-                    :alt="item.name"
+            </div>
+            <!-- 歌手 -->
+            <span
+              min-w30
+              font-500
+              >{{ item.singer }}</span
+            >
+            <!-- 专辑 -->
+            <span
+              min-w30
+              font-500
+              >{{ item.album }}</span
+            >
+            <!-- 时长 -->
+            <span
+              w5
+              font-bold
+            >
+              {{ format(item.duration) || '--' }}
+            </span>
+            <!-- 操作 -->
+            <div
+              flex-row
+              min-w50
+            >
+              <div
+                class="hover"
+                h7
+                w7
+                border="1.5px solid"
+                border-gray-200:50
+                bg-white:10
+                rounded
+                flex-row
+                text-3
+                @click.stop="handlerItemClick(item, idx)"
+              >
+                <Transition mode="out-in">
+                  <div
+                    v-if="
+                      playerStore.playing &&
+                      playerStore.currentMusic.id === item.id
+                    "
+                    i-iconamoon-player-pause-fill
+                    color="#5d72f6"
                   />
-                </div>
-                <!-- 歌曲名+标识 -->
-                <div
-                  flex-col-center
-                  items-start
-                  gap-1.5
-                  line-height-none
-                  flex-1
-                >
-                  <span font-bold>{{ item.name }}</span>
-                  <span
-                    rounded
-                    bg="#dec998"
-                    color="#050506"
-                    text-.1
-                    font-bold
-                    px1
-                    py.3
-                    >flac</span
-                  >
-                </div>
-                <!-- 歌手 -->
-                <span
-                  min-w30
-                  font-500
-                  >{{ item.singer }}</span
-                >
-                <!-- 专辑 -->
-                <span
-                  min-w30
-                  font-500
-                  >{{ item.album }}</span
-                >
-                <!-- 时长 -->
-                <span
-                  w5
-                  font-bold
-                >
-                  {{ format(item.duration) || '--' }}
-                </span>
-                <!-- 操作 -->
-                <div
-                  flex-row
-                  min-w50
-                >
                   <div
-                    class="hover"
-                    h7
-                    w7
-                    border="1.5px solid"
-                    border-gray-200:50
-                    bg-white:10
-                    rounded
-                    flex-row
-                    text-3
-                    @click.stop="handlerItemClick(item, idx)"
-                  >
-                    <Transition mode="out-in">
-                      <div
-                        v-if="
-                          playerStore.playing &&
-                          playerStore.currentMusic.id === item.id
-                        "
-                        i-iconamoon-player-pause-fill
-                        color="#5d72f6"
-                      />
-                      <div
-                        v-else
-                        i-iconamoon-player-play-fill
-                        color="#5d72f6"
-                      />
-                    </Transition>
-                  </div>
-                  <div
-                    cursor-pointer
-                    ml-6
-                    h7
-                    w7
-                    flex-row
-                    text-4
-                    @click.stop="handlerSwitchLovedState(item)"
-                  >
-                    <Transition mode="out-in">
-                      <div
-                        v-if="item.isLoved"
-                        color="#5d72f6"
-                        i-material-symbols-favorite-rounded
-                      />
-                      <div
-                        v-else
-                        color="#5d72f6"
-                        i-material-symbols-favorite-outline-rounded
-                      />
-                    </Transition>
-                  </div>
-                  <div
-                    cursor-pointer
-                    ml-6
-                    h7
-                    w7
-                    hover:color-white
-                    hover:transition
-                    flex-row
-                    text-4
-                    @click.stop="handlerDownLoadItem(item)"
-                  >
-                    <div i-mdi-download />
-                  </div>
-                </div>
+                    v-else
+                    i-iconamoon-player-play-fill
+                    color="#5d72f6"
+                  />
+                </Transition>
               </div>
-            </template>
-          </draggable>
+              <div
+                cursor-pointer
+                ml-6
+                h7
+                w7
+                flex-row
+                text-4
+                @click.stop="handlerSwitchLovedState(item)"
+              >
+                <Transition mode="out-in">
+                  <div
+                    v-if="item.isLoved"
+                    color-red
+                    i-material-symbols-favorite-rounded
+                  />
+                  <div
+                    v-else
+                    color="#5d72f6"
+                    hover:color-red
+                    hover:transition-all
+                    hover:ease
+                    i-material-symbols-favorite-outline-rounded
+                  />
+                </Transition>
+              </div>
+              <div
+                cursor-pointer
+                ml-6
+                h7
+                w7
+                hover:color="#5d72f6"
+                hover:transition
+                flex-row
+                text-4
+                @click.stop="handlerDownLoadItem(item)"
+              >
+                <div i-mdi-download />
+              </div>
+            </div>
+          </div>
+          <!-- </draggable> -->
         </div>
       </el-scrollbar>
     </div>
@@ -604,10 +640,10 @@ function handlerScrollAnchorMusic() {
 
   <!--遮罩-->
   <!-- <div
-      class="mmPlayer-bg"
-      :style="{ backgroundImage: picUrl }"
-    ></div>
-    <div class="mmPlayer-mask"></div> -->
+    class="mmPlayer-bg"
+    :style="{ backgroundImage: picUrl }"
+  ></div>
+  <div class="mmPlayer-mask"></div> -->
 </template>
 
 <style lang="scss">
@@ -623,7 +659,7 @@ function handlerScrollAnchorMusic() {
 
 .mmPlayer-mask {
   z-index: -1;
-  background-color: $mask_color;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .mmPlayer-bg {

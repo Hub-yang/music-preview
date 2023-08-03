@@ -14,13 +14,13 @@ nextTick(() => {
 <template>
   <el-config-provider :locale="locale">
     <div
+      bg="#18181d"
       id="app"
       max-wscreen
       max-hscreen
       overflow-hidden
       color-gray-300:50
       text-3.5
-      bg="#18181d"
       flex="~"
       flex-col
       pb3

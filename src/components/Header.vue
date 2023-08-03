@@ -6,7 +6,7 @@ const btnList = ref([
     active: false
   },
   {
-    name: '随机列表',
+    name: '全部',
     active: false
   }
 ])
@@ -16,13 +16,17 @@ function handlerBtnClick(idx: number, item: string) {
 
   btnList.value.forEach((item) => (item.active = false))
   btnList.value[idx].active = true
-  if (item === '我喜欢') {
-    playerStore.playlist = playerStore.lovedList
-
-    playerStore.curListMode = 'loved'
-  }
   setTimeout(() => {
     playerStore.disabled = true
+    if (item === '我喜欢') {
+      playerStore.playlist = playerStore.lovedList
+      playerStore.curListMode = 'loved'
+    }
+
+    if (item === '全部') {
+      playerStore.playlist = playerStore.allPlayList
+      playerStore.curListMode = 'random'
+    }
   }, 0)
 }
 </script>

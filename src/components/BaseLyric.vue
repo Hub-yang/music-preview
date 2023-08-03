@@ -63,6 +63,7 @@ function clacTop() {
     <!--封面-->
     <dl
       text-center
+      flex-col-center
     >
       <dt
         relative
@@ -82,6 +83,7 @@ function clacTop() {
       </dt>
       <div
         v-if="currentMusic.id"
+        wfull
         flex="~"
         flex-col
         items-start
