@@ -120,6 +120,7 @@
     "unrefElement": true,
     "until": true,
     "useActiveElement": true,
+    "useAnimate": true,
     "useArrayEvery": true,
     "useArrayFilter": true,
     "useArrayFind": true,

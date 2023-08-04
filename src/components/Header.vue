@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import _ from 'lodash'
+import { useAnimate } from '@/utils'
 const playerStore = usePlayerStore()
 const btnList = ref([
   {
@@ -12,12 +14,12 @@ const btnList = ref([
 ])
 
 function handlerBtnClick(idx: number, item: string) {
-  playerStore.disabled = false
+  const beforeCall = () => {
+    btnList.value.forEach((item) => (item.active = false))
+    btnList.value[idx].active = true
+  }
 
-  btnList.value.forEach((item) => (item.active = false))
-  btnList.value[idx].active = true
-  setTimeout(() => {
-    playerStore.disabled = true
+  const afterCall = () => {
     if (item === '我喜欢') {
       playerStore.playlist = playerStore.lovedList
       playerStore.curListMode = 'loved'
@@ -27,8 +29,15 @@ function handlerBtnClick(idx: number, item: string) {
       playerStore.playlist = playerStore.allPlayList
       playerStore.curListMode = 'random'
     }
-  }, 0)
+  }
+
+  useAnimate(beforeCall, afterCall)
 }
+
+const handlerBtnClickDebounce = _.debounce(handlerBtnClick, 500, {
+  leading: true,
+  trailing: false
+})
 </script>
 
 <template>
@@ -68,7 +77,7 @@ function handlerBtnClick(idx: number, item: string) {
         :class="[btn.active ? 'active' : '']"
         v-for="(btn, idx) in btnList"
         :key="idx"
-        @click="handlerBtnClick(idx, btn.name)"
+        @click="handlerBtnClickDebounce(idx, btn.name)"
         hover:color="#6477f4"
         hover:transition
         color-white:90

@@ -15,7 +15,8 @@ watch(
         targets: '.cover-anime',
         width: '15rem',
         right: '0',
-        scale: 1
+        scale: 1,
+        easing: 'spring(1, 80, 10, 0)'
       })
       anime({
         targets: '.musicInfo-anime',

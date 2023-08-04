@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import _ from 'lodash'
 // import draggable from 'vuedraggable'
+import { ElMessage } from 'element-plus'
 import comma from '@/assets/svg/comma.svg'
 import { initPlayer } from './initPlayer'
 import { format } from '@/utils/format'
-import { parseLyric } from '@/utils/index'
+import { parseLyric, useAnimate } from '@/utils'
 import { getLrcFile, download } from '@/api/modules'
 const playerStore = usePlayerStore()
 const ele = playerStore.Player
@@ -125,11 +127,24 @@ function handlerSwitchLovedState(item: baseObj) {
   if (playerStore.curListMode === 'random') {
     if (!item.isLoved) {
       item.isLoved = true
+
       lovedList.push(item)
+      ElMessage({
+        message: '已添加至我喜欢',
+        type: 'success',
+        duration: 1000,
+        customClass: 'loved-color'
+      })
     } else {
       item.isLoved = false
       let curIdx = lovedList.findIndex((el) => el.id === item.id)
       lovedList.splice(curIdx, 1)
+      ElMessage({
+        message: '已从我喜欢移除',
+        type: 'success',
+        duration: 1000,
+        customClass: 'loved-color'
+      })
     }
   } else if (playerStore.curListMode === 'loved') {
     // 将isLoved置为false以启动动画
@@ -150,28 +165,35 @@ function handlerScrollAnchorMusic() {
 
 // 切换列表
 function toggleList(singer: string) {
-  playerStore.disabled = false
-  playerStore.curListMode = 'random'
-
   let tempList: baseObj[] = []
-  playerStore.allPlayList.forEach((item) => {
-    if (item.singer === singer) {
-      tempList.push(item)
-    }
-  })
+  const beforeCall = () => {
+    playerStore.curListMode = 'random'
+    playerStore.allPlayList.forEach((item) => {
+      if (item.singer === singer) {
+        tempList.push(item)
+      }
+    })
+  }
 
-  setTimeout(() => {
+  const afterCall = () => {
     playerStore.disabled = true
     playerStore.playlist = tempList
-  }, 0)
+  }
+
+  useAnimate(beforeCall, afterCall)
 }
 
-// 蒙层背景
-const picUrl = computed(() => {
-  return playerStore.currentMusic.id && playerStore.currentMusic.image
-    ? `url(${playerStore.currentMusic.image})`
-    : 'transparent'
+const toggleListDebounce = _.debounce(toggleList, 500, {
+  leading: true,
+  trailing: false
 })
+
+// 蒙层背景
+// const picUrl = computed(() => {
+//   return playerStore.currentMusic.id && playerStore.currentMusic.image
+//     ? `url(${playerStore.currentMusic.image})`
+//     : 'transparent'
+// })
 </script>
 
 <template>
@@ -183,8 +205,8 @@ const picUrl = computed(() => {
     mx5
     mb3
   >
+    <!-- 左侧 -->
     <div
-      w80
       bg-black:80
       rounded-2
       flex="~"
@@ -201,8 +223,8 @@ const picUrl = computed(() => {
         专辑
       </div>
       <div
-        wfull
         flex-1
+        wfull
         box-border
         px-6
         pt2
@@ -214,7 +236,7 @@ const picUrl = computed(() => {
         >
           <el-col :span="14">
             <div
-              @click="toggleList('林俊杰')"
+              @click="toggleListDebounce('林俊杰')"
               cursor-pointer
               h30
               bg="#516988"
@@ -279,7 +301,7 @@ const picUrl = computed(() => {
           </el-col>
           <el-col :span="14">
             <div
-              @click="toggleList('周杰伦')"
+              @click="toggleListDebounce('周杰伦')"
               cursor-pointer
               h30
               bg="#223f44"
@@ -380,35 +402,34 @@ const picUrl = computed(() => {
         <div
           h50
           wfull
+          overflow-hidden
         >
           <base-weather-card />
         </div>
       </div>
     </div>
 
+    <!-- 中间列表 -->
     <div
+      overflow-hidden
       flex-1
       bg-black:80
       rounded-2
       relative
-      overflow-hidden
-      box-border
-      pb2
+      flex="~"
+      flex-col
     >
       <div
+        wfull
         pl-5
+        box-border
         h10
         rounded-t-2
         line-height-10
         color-white
         font-bold
         text-4
-        absolute
-        top-0
-        left-0
-        wfull
         bg-black:80
-        z-1
       >
         播放列表
       </div>
@@ -435,27 +456,13 @@ const picUrl = computed(() => {
 
       <el-scrollbar>
         <div
-          :class="[playerStore.disabled ? 'tilt-in-left-2' : '']"
+          :class="[playerStore.disabled ? 'puff-in-center' : '']"
           v-if="playerStore.playlist.length > 0"
-          pt10
           px-5
+          pb2
+          box-border
           overflow-hidden
         >
-          <!-- <draggable
-            class="list-group"
-            tag="transition-group"
-            :component-data="{
-              tag: 'ul',
-              type: 'transition-group',
-              name: !drag ? 'flip-list' : null
-            }"
-            v-model="playerStore.playlist"
-            v-bind="dragOptions"
-            @start="drag = true"
-            @end="drag = false"
-            item-key="order"
-          >
-          <template #item="{ element: item, index: idx }"> -->
           <div
             v-for="(item, idx) in playerStore.playlist"
             :key="idx"
@@ -613,11 +620,11 @@ const picUrl = computed(() => {
               </div>
             </div>
           </div>
-          <!-- </draggable> -->
         </div>
       </el-scrollbar>
     </div>
 
+    <!-- 右侧 -->
     <div
       :class="lyricVisible ? 'show' : ''"
       w80
@@ -707,45 +714,34 @@ const picUrl = computed(() => {
 }
 
 // 列表进入动画
-.tilt-in-left-2 {
-  -webkit-animation: tilt-in-left-2 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+
+.puff-in-center {
+  -webkit-animation: text-focus-in 0.6s cubic-bezier(0.55, 0.085, 0.68, 0.53)
     both;
-  animation: tilt-in-left-2 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  animation: text-focus-in 0.6s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
 }
 
-/* ----------------------------------------------
- * Generated by Animista on 2023-8-1 16:22:44
- * Licensed under FreeBSD License.
- * See http://animista.net/license for more info. 
- * w: http://animista.net, t: @cssanimista
- * ---------------------------------------------- */
-
-/**
- * ----------------------------------------
- * animation tilt-in-left-2
- * ----------------------------------------
- */
-@-webkit-keyframes tilt-in-left-2 {
+@-webkit-keyframes text-focus-in {
   0% {
-    -webkit-transform: rotateX(30deg) translateX(-300px) skewX(30deg);
-    transform: rotateX(30deg) translateX(-300px) skewX(30deg);
+    -webkit-filter: blur(12px);
+    filter: blur(12px);
     opacity: 0;
   }
   100% {
-    -webkit-transform: rotateX(0deg) translateX(0) skewX(0deg);
-    transform: rotateX(0deg) translateX(0) skewX(0deg);
+    -webkit-filter: blur(0px);
+    filter: blur(0px);
     opacity: 1;
   }
 }
-@keyframes tilt-in-left-2 {
+@keyframes text-focus-in {
   0% {
-    -webkit-transform: rotateX(30deg) translateX(-300px) skewX(30deg);
-    transform: rotateX(30deg) translateX(-300px) skewX(30deg);
+    -webkit-filter: blur(12px);
+    filter: blur(12px);
     opacity: 0;
   }
   100% {
-    -webkit-transform: rotateX(0deg) translateX(0) skewX(0deg);
-    transform: rotateX(0deg) translateX(0) skewX(0deg);
+    -webkit-filter: blur(0px);
+    filter: blur(0px);
     opacity: 1;
   }
 }
@@ -755,18 +751,6 @@ const picUrl = computed(() => {
   animation: slit-out-horizontal 0.5s ease-in both;
 }
 
-/* ----------------------------------------------
- * Generated by Animista on 2023-8-1 17:43:52
- * Licensed under FreeBSD License.
- * See http://animista.net/license for more info. 
- * w: http://animista.net, t: @cssanimista
- * ---------------------------------------------- */
-
-/**
- * ----------------------------------------
- * animation slit-out-horizontal
- * ----------------------------------------
- */
 @-webkit-keyframes slit-out-horizontal {
   0% {
     -webkit-transform: translateZ(0) rotateX(0);

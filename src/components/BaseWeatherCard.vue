@@ -90,7 +90,7 @@
         </div>
       </div>
     </div>
-    <svg id="outer"></svg>
+    <svg id="outer" />
   </div>
 </template>
 
@@ -180,16 +180,25 @@ onBeforeMount(() => {
   //每隔1h请求更新一次
   timer = setInterval(initData, 1000 * 60 * 60)
 })
-const initData = async () => {
-  const {
-    now: { temp, text }
-  } = await getHFWeather()
+const initData = () => {
+  let temp, text
 
-  console.log(text)
-  // 动画
-  tempNow.value = temp
-  init(text)
-  requestAnimationFrame(tick)
+  getHFWeather()
+    .then((res) => {
+      if (res.code == 200) {
+        temp = res.now.temp
+        text = res.now.text
+      } else {
+        temp = '26'
+        text = '晴'
+      }
+    })
+    .finally(() => {
+      // 动画
+      tempNow.value = temp
+      init(text)
+      requestAnimationFrame(tick)
+    })
 }
 
 onUnmounted(() => {

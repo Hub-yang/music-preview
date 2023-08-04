@@ -1,4 +1,8 @@
-// 歌词解析
+/**
+ * 歌词解析
+ * @author mocheng
+ * @date 2023-08-04
+ */
 export function parseLyric(lrc) {
   const timeExp = /\[(\d{2,}):(\d{2})(?:\.(\d{2,3}))?]/g
   const lines = lrc.split('\n')
@@ -22,4 +26,20 @@ export function parseLyric(lrc) {
     }
   }
   return lyric
+}
+
+/**
+ * 控制动画执行时机
+ * @author mocheng
+ * @date 2023-08-04
+ */
+export function useAnimate(beforeCall, afterCall) {
+  const playerStore = usePlayerStore()
+  playerStore.disabled = false
+  beforeCall()
+  setTimeout(() => {
+    playerStore.disabled = true
+    afterCall()
+  }, 0)
+
 }
