@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import draggable from 'vuedraggable'
+// import draggable from 'vuedraggable'
 import comma from '@/assets/svg/comma.svg'
 import { initPlayer } from './initPlayer'
 import { format } from '@/utils/format'
@@ -9,21 +9,16 @@ const playerStore = usePlayerStore()
 const ele = playerStore.Player
 initPlayer()
 
-watch(
-  () => playerStore.lovedList,
-  (val) => {
-    // localStorage.setItem('lovedList', JSON.stringify(val))
-  },
-  {
-    deep: true
-  }
-)
 const lyricVisible = ref<boolean>(true)
 
 function handlerItemClick(item: baseObj, idx: number) {
+  if (!ele.src) {
+    ele.src = playerStore.currentMusic.url
+  }
   if (playerStore.currentMusic.id !== item.id) {
     ele.src = item.url
     playerStore.playing = true
+    // 更新currentMusic
     playerStore.currentMusic = playerStore.playlist[idx]
   } else {
     playerStore.playing = !playerStore.playing
@@ -47,16 +42,16 @@ function handlerDownLoadItem(item) {
 }
 
 // 拖拽相关
-const drag = ref(false)
+// const drag = ref(false)
 
-const dragOptions = computed(() => {
-  return {
-    animation: 200,
-    group: 'description',
-    disabled: false,
-    ghostClass: 'ghost'
-  }
-})
+// const dragOptions = computed(() => {
+//   return {
+//     animation: 200,
+//     group: 'description',
+//     disabled: false,
+//     ghostClass: 'ghost'
+//   }
+// })
 
 watch(
   () => playerStore.playMode,

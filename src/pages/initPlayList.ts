@@ -1,5 +1,6 @@
 import { getFileList } from "@/api/modules"
 import { nanoid } from "nanoid"
+import { initKeyDown } from "@/pages/initKeyDown"
 export function usePlayList() {
   let allPLayeListTemp: baseObj[] = []
   let timerId
@@ -35,7 +36,12 @@ export function usePlayList() {
     if (allPLayeListTemp.every((item) => item.duration)) {
       clearInterval(timerId)
       timerId = undefined
+      // 列表加载完成
       playerStore.playlist = playerStore.allPlayList = allPLayeListTemp
+      // 初始化currentMusic
+      playerStore.currentMusic = allPLayeListTemp[0]
+      // 初始化keyDown事件
+      initKeyDown()
       return true
     }
     allPLayeListTemp.forEach((item) => {

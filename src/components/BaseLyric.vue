@@ -4,6 +4,43 @@ export default {
 }
 </script>
 <script setup lang="ts">
+import anime from 'animejs/lib/anime.es.js'
+const playerStore = usePlayerStore()
+
+watch(
+  () => playerStore.playing,
+  (val) => {
+    if (val) {
+      anime({
+        targets: '.cover-anime',
+        width: '15rem',
+        right: '0',
+        scale: 1
+      })
+      anime({
+        targets: '.musicInfo-anime',
+        easing: 'easeInOutSine',
+        translateX: '1rem',
+        duration: 500
+      })
+    } else {
+      anime({
+        targets: '.cover-anime',
+        width: '10rem',
+        right: '4rem',
+        scale: 0.95,
+        easing: 'easeInOutSine',
+        duration: 500
+      })
+      anime({
+        targets: '.musicInfo-anime',
+        easing: 'easeInOutSine',
+        translateX: 0,
+        duration: 500
+      })
+    }
+  }
+)
 interface Props {
   lyric: baseObj[]
   lyricIndex: number
@@ -58,14 +95,18 @@ function clacTop() {
     flex="~"
     flex-col
     items-center
-    justify-between
+    gap-5
   >
-    <!--封面-->
     <dl
+      w="100%"
+      px-6
+      box-border
       text-center
       flex-col-center
     >
+      <!--封面-->
       <dt
+        class="cover-anime"
         relative
         w60
         h40
@@ -81,8 +122,10 @@ function clacTop() {
           :src="musicPicUrl"
         />
       </dt>
+      <!-- 信息 -->
       <div
         v-if="currentMusic.id"
+        class="musicInfo-anime"
         wfull
         flex="~"
         flex-col
@@ -115,11 +158,16 @@ function clacTop() {
     <div
       ref="musicLyric"
       class="music-lyric"
-      mb3
+      flex-1
+      overflow-hidden
+      text-center
+      wfull
     >
       <div
-        :style="lyricTop"
         class="music-lyric-items"
+        :style="lyricTop"
+        text-center
+        select-none
       >
         <p v-if="!currentMusic.id">还没有播放音乐哦！</p>
         <template v-else-if="lyric.length > 0">
@@ -140,13 +188,6 @@ function clacTop() {
 <style lang="scss" scoped>
 /*歌词部分*/
 .music-lyric {
-  position: absolute;
-  top: 315px;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  overflow: hidden;
-  text-align: center;
   mask-image: linear-gradient(
     to bottom,
     rgba(255, 255, 0) 0,
@@ -157,12 +198,11 @@ function clacTop() {
     rgba(255, 255, 0) 100%
   );
   .music-lyric-items {
-    text-align: center;
     line-height: 34px;
     font-size: 12px;
     transform: translate3d(0, 0, 0);
     transition: transform 0.6s ease-out;
-    user-select: none;
+
     @include no-wrap;
     .on {
       transition: all 0.6s ease;

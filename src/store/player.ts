@@ -41,8 +41,10 @@ export const usePlayerStore = defineStore("player", () => {
 
 
   function play() {
-    if (playing.value) Player.value.play()
-    else Player.value.pause()
+    if (playing.value)
+      Player.value.play()
+    else
+      Player.value.pause()
   }
 
   function next() {

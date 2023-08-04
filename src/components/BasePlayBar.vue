@@ -14,7 +14,6 @@ function handlerChangeLoopMode() {
 }
 
 // progress相关
-
 const percentMusic = computed(() => {
   const duration = playerStore.currentMusic.duration
   return playerStore.currentTime && duration
@@ -35,11 +34,16 @@ function handlerBarPlay() {
   playerStore.play()
 }
 
+// 监听全局音量变化,更新进度条
+watch(
+  () => playerStore.volume,
+  (val) => volumeChange(val)
+)
+
 // 音量控件相关
 function volumeChange(percent) {
   percent === 0 ? (playerStore.isMute = true) : (playerStore.isMute = false)
-  playerStore.volume = percent
-  playerStore.Player.volume = percent
+  playerStore.volume = playerStore.Player.volume = percent
   // 缓存
   // setVolume(percent)
 }
@@ -71,7 +75,7 @@ const btnStyle = computed<StyleValue>(() => ({
       <div
         :style="btnStyle"
         i-solar-skip-previous-bold
-        title="上一曲 Ctrl + Left"
+        title="上一曲 Ctrl + Shift + ←"
         @click="playerStore.prev"
       />
 
@@ -84,7 +88,7 @@ const btnStyle = computed<StyleValue>(() => ({
         flex-row
         bg-white:90
         color="#5d72f6"
-        title="播放暂停 Ctrl + Space"
+        title="播放/暂停 Space"
         @click="handlerBarPlay"
       >
         <Transition mode="out-in">
@@ -104,7 +108,7 @@ const btnStyle = computed<StyleValue>(() => ({
         :style="btnStyle"
         cursor-pointer
         i-solar-skip-next-bold
-        title="下一曲 Ctrl + Right"
+        title="下一曲 Ctrl + Shift + →"
         @click="playerStore.next"
       />
     </div>
@@ -181,7 +185,7 @@ const btnStyle = computed<StyleValue>(() => ({
     <!-- 音量控制 -->
     <div
       ml-10
-      title="音量加减 [Ctrl + Up / Down]"
+      title="音量加/减 Ctrl + ↑/↓"
     >
       <base-volume
         :volume="playerStore.volume"

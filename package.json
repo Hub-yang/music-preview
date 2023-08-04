@@ -15,6 +15,7 @@
     "@iconify-json/ph": "^1.1.5",
     "@vitejs/plugin-legacy": "^4.0.3",
     "@vueuse/core": "^9.13.0",
+    "animejs": "^3.2.1",
     "axios": "^1.4.0",
     "element-plus": "^2.3.8",
     "moment": "^2.29.4",

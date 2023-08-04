@@ -1,8 +1,8 @@
 import { usePlayList } from "./initPlayList"
 
 let retry = 1
-export function initPlayer() {
-  usePlayList()
+export async function initPlayer() {
+  await usePlayList()
   const playerStore = usePlayerStore()
   const ele = playerStore.Player;
 
