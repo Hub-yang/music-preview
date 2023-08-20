@@ -61,13 +61,13 @@ export default ({ mode }) => {
       host: '0.0.0.0',
       port: 3334,
       open: true,
-      // proxy: {
-      //   [env.VITE_APP_BASE_API]: {
-      //     target: env.VITE_APP_REQUEST_API,
-      //     changeOrigin: true, //是否允许跨域
-      //     rewrite: (pathStr: string) => pathStr.replace(env.VITE_APP_BASE_API, env.VITE_APP_TRUE_API),
-      //   },
-      // },
+      proxy: {
+        [env.VITE_APP_BASE_API]: {
+          target: env.VITE_APP_REQUEST_API,
+          changeOrigin: true, //是否允许跨域
+          rewrite: (pathStr: string) => pathStr.replace(env.VITE_APP_BASE_API, env.VITE_APP_TRUE_API),
+        },
+      },
     },
     // build配置
     build: {
