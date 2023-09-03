@@ -7,6 +7,7 @@ import { initPlayer } from './initPlayer'
 import { format } from '@/utils/format'
 import { parseLyric, useAnimate } from '@/utils'
 import { getLrcFile, download } from '@/api/modules'
+
 const playerStore = usePlayerStore()
 const ele = playerStore.Player
 initPlayer()
@@ -17,6 +18,7 @@ function handlerItemClick(item: baseObj, idx: number) {
   if (!ele.src) {
     ele.src = playerStore.currentMusic.url
   }
+
   if (playerStore.currentMusic.id !== item.id) {
     ele.src = item.url
     playerStore.playing = true
@@ -109,13 +111,6 @@ watch(
   }
 )
 
-watch(
-  () => playerStore.curListMode,
-  (val) => {
-    console.log(val)
-  }
-)
-
 async function _getLyric() {
   const fileContext = await getLrcFile(playerStore.currentMusic.lyric)
   lyric.value = parseLyric(fileContext)
@@ -124,11 +119,14 @@ async function _getLyric() {
 //切换喜欢状态，更新我喜欢列表
 function handlerSwitchLovedState(item: baseObj) {
   const lovedList = playerStore.lovedList
+
   if (playerStore.curListMode === 'random') {
     if (!item.isLoved) {
       item.isLoved = true
 
       lovedList.push(item)
+      // 更新缓存
+      localStorage.setItem('LOVE_LIST', JSON.stringify(lovedList))
       ElMessage({
         message: '已添加至我喜欢',
         type: 'success',
@@ -139,6 +137,8 @@ function handlerSwitchLovedState(item: baseObj) {
       item.isLoved = false
       let curIdx = lovedList.findIndex((el) => el.id === item.id)
       lovedList.splice(curIdx, 1)
+      // 更新缓存
+      localStorage.setItem('LOVE_LIST', JSON.stringify(lovedList))
       ElMessage({
         message: '已从我喜欢移除',
         type: 'success',
@@ -152,16 +152,29 @@ function handlerSwitchLovedState(item: baseObj) {
     let curIdx = playerStore.playlist.findIndex((el) => el.id === item.id)
     setTimeout(() => {
       playerStore.playlist.splice(curIdx, 1)
+      // 更新缓存
+      localStorage.setItem('LOVE_LIST', JSON.stringify(lovedList))
     }, 500)
   }
 }
 
+let timer
+/**
+ * 定位当前播放
+ */
 function handlerScrollAnchorMusic() {
-  const el = document.querySelector('.on')
-  el?.scrollIntoView({
-    behavior: 'smooth'
-  })
+  const el = document.querySelector('.onPlaying')
+  el?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+
+  timer = setTimeout(() => {
+    el?.classList.add('animate__animated')
+    el?.classList.add('animate__shakeX')
+  }, 500)
 }
+
+onUnmounted(() => {
+  clearTimeout(timer)
+})
 
 // 切换列表
 function toggleList(singer: string) {
@@ -227,8 +240,11 @@ const toggleListDebounce = _.debounce(toggleList, 500, {
         wfull
         box-border
         px-6
-        pt2
         select-none
+        flex="~"
+        flex-col
+        py-5
+        justify-evenly
       >
         <el-row
           :gutter="12"
@@ -274,7 +290,7 @@ const toggleListDebounce = _.debounce(toggleList, 500, {
               <span
                 text-3
                 font-bold
-                >14首</span
+                >12首</span
               >
             </div>
           </el-col>
@@ -340,7 +356,7 @@ const toggleListDebounce = _.debounce(toggleList, 500, {
               <span
                 text-3
                 font-bold
-                >14首</span
+                >11首</span
               >
             </div>
           </el-col>
@@ -348,6 +364,7 @@ const toggleListDebounce = _.debounce(toggleList, 500, {
         <el-row :gutter="12">
           <el-col :span="14">
             <div
+              @click="toggleListDebounce('G.E.M.邓紫棋')"
               cursor-pointer
               h30
               bg="#9c7b93"
@@ -374,13 +391,13 @@ const toggleListDebounce = _.debounce(toggleList, 500, {
                 mb3
                 font-bold
                 text-4
-                >" 重拾_快乐 "</span
+                >" 启示录 "</span
               >
               <span
                 mb1
                 text-3
                 font-bold
-                >林俊杰</span
+                >邓紫棋</span
               >
               <span
                 text-3
@@ -400,6 +417,7 @@ const toggleListDebounce = _.debounce(toggleList, 500, {
         </el-row>
         <!-- 天气组件 -->
         <div
+          mt10
           h50
           wfull
           overflow-hidden
@@ -409,9 +427,8 @@ const toggleListDebounce = _.debounce(toggleList, 500, {
       </div>
     </div>
 
-    <!-- 中间列表 -->
+    <!-- 中间部分 -->
     <div
-      overflow-hidden
       flex-1
       bg-black:80
       rounded-2
@@ -446,7 +463,7 @@ const toggleListDebounce = _.debounce(toggleList, 500, {
         flex-row
         text-4.6
         bg-purple:20
-        @click="handlerScrollAnchorMusic"
+        @click.stop="handlerScrollAnchorMusic"
       >
         <div
           color="#6477f4"
@@ -468,7 +485,7 @@ const toggleListDebounce = _.debounce(toggleList, 500, {
             :key="idx"
             :class="[
               playerStore.playing && playerStore.currentMusic.id === item.id
-                ? 'on'
+                ? 'onPlaying'
                 : '',
               !item.isLoved && playerStore.curListMode == 'loved'
                 ? 'slit-out-horizontal'
@@ -675,7 +692,7 @@ const toggleListDebounce = _.debounce(toggleList, 500, {
   transform: scale(1.1);
 }
 
-.on {
+.onPlaying {
   color: #fff;
 
   .list-img {
@@ -714,7 +731,6 @@ const toggleListDebounce = _.debounce(toggleList, 500, {
 }
 
 // 列表进入动画
-
 .puff-in-center {
   -webkit-animation: text-focus-in 0.6s cubic-bezier(0.55, 0.085, 0.68, 0.53)
     both;

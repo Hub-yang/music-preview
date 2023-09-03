@@ -1,22 +1,30 @@
-import { getFileList } from "@/api/modules"
-import { nanoid } from "nanoid"
-import { initKeyDown } from "@/pages/initKeyDown"
+import { getFileList } from '@/api/modules'
+import { nanoid } from 'nanoid'
+import { initKeyDown } from '@/pages/initKeyDown'
 export function usePlayList() {
   let allPLayeListTemp: baseObj[] = []
   let timerId
   const playerStore = usePlayerStore()
 
-  const albumList = ['周杰伦/最伟大的作品', '林俊杰/重拾_快乐']
+  const albumList = ['周杰伦/最伟大的作品', '林俊杰/重拾_快乐', '邓紫棋/启示录']
   const baseURL = 'https://mochenghualei.com.cn/'
-  Promise.all([getFileList('audios/周杰伦/'), getFileList('audios/林俊杰/')]).then((res) => {
-    const listMap = { ...res.map(item => { item.data.shift(); return item.data }) }
+  Promise.all([
+    getFileList('audios/周杰伦/'),
+    getFileList('audios/林俊杰/'),
+    getFileList('audios/邓紫棋/')
+  ]).then((res) => {
+    const listMap = {
+      ...res.map((item) => {
+        item.data.shift()
+        return item.data
+      })
+    }
     albumList.forEach((_, idx) => {
       const curList = initListItem(listMap[idx], albumList[idx])
       allPLayeListTemp.push(...curList)
     })
     handlerDuration()
   })
-
 
   function handlerDuration() {
     timerId = setInterval(() => checkDurationTime(), 100)
@@ -37,9 +45,15 @@ export function usePlayList() {
       clearInterval(timerId)
       timerId = undefined
       // 列表加载完成
+      // 根据我喜欢列表缓存更新元素状态
+      allPLayeListTemp.forEach((item) => {
+        if (!!playerStore.lovedList.find((song) => song.name === item.name)) {
+          item.isLoved = true
+        }
+      })
       playerStore.playlist = playerStore.allPlayList = allPLayeListTemp
       // 初始化currentMusic
-      playerStore.currentMusic = allPLayeListTemp[0]
+      playerStore.currentMusic = playerStore.playlist[0]
       // 初始化keyDown事件
       initKeyDown()
       return true
@@ -53,13 +67,12 @@ export function usePlayList() {
 
   // 格式化歌曲名、歌手
   function formatMusicKey(key: string) {
-    let musickey = key.split("/")[2].replace('.flac', '').split('-')
+    let musickey = key.split('/')[2].replace('.flac', '').split('-')
     return {
       singer: musickey[0],
       name: musickey[1]
     }
   }
-
 
   function initListItem(curList: baseObj[], album) {
     let temp: baseObj[] = []

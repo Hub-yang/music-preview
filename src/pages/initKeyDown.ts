@@ -2,7 +2,6 @@ export function initKeyDown() {
   const playerStore = usePlayerStore()
   // 初始化键盘事件
   window.addEventListener('keydown', (e) => {
-
     // 播放/暂停
     if (e.code == 'Space') {
       if (!playerStore.Player.src) {
@@ -26,6 +25,8 @@ export function initKeyDown() {
     // 音量加
     if (e.shiftKey && e.ctrlKey && e.code == 'ArrowUp') {
       playerStore.volume <= 0.9 && (playerStore.volume += 0.1)
+      // 更新缓存
+      localStorage.setItem('VOLUME', JSON.stringify(playerStore.volume))
     }
 
     // 音量减
@@ -35,6 +36,8 @@ export function initKeyDown() {
       } else if (playerStore.volume > 0 && playerStore.volume < 0.1) {
         playerStore.volume = 0
       }
+      // 更新缓存
+      localStorage.setItem('VOLUME', JSON.stringify(playerStore.volume))
     }
   })
 }

@@ -44,8 +44,8 @@ watch(
 function volumeChange(percent) {
   percent === 0 ? (playerStore.isMute = true) : (playerStore.isMute = false)
   playerStore.volume = playerStore.Player.volume = percent
-  // 缓存
-  // setVolume(percent)
+  // 更新缓存
+  localStorage.setItem('VOLUME', JSON.stringify(percent))
 }
 
 const btnStyle = computed<StyleValue>(() => ({

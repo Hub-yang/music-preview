@@ -1,10 +1,10 @@
-import { usePlayList } from "./initPlayList"
+import { usePlayList } from './initPlayList'
 
 let retry = 1
 export function initPlayer() {
   usePlayList()
   const playerStore = usePlayerStore()
-  const ele = playerStore.Player;
+  const ele = playerStore.Player
 
   // 音频缓冲事件
   ele.onprogress = () => {
@@ -13,17 +13,17 @@ export function initPlayer() {
         const duration = playerStore.currentMusic.duration
         let buffered = 0
         ele.buffered.end(0)
-        buffered = ele.buffered.end(0) > duration ? duration : ele.buffered.end(0)
+        buffered =
+          ele.buffered.end(0) > duration ? duration : ele.buffered.end(0)
         playerStore.currentProgress = buffered / duration
       }
-    } catch (e) { }
+    } catch (e) {}
   }
   // 开始播放音乐
   ele.onplay = () => {
     let timer
     clearTimeout(timer)
-    timer = setTimeout(() => {
-    }, 100)
+    timer = setTimeout(() => {}, 100)
   }
 
   // 获取当前播放时间
@@ -77,18 +77,6 @@ export function initPlayer() {
   // ele.onpause = () => {
   //   that.setPlaying(false)
   // }
-
-
-
-
-
-
-
-
-
-
-
-
 
   //测试audio回调
   // ele.onabort = () => {
@@ -154,4 +142,3 @@ export function initPlayer() {
   // ele.onwaiting = () => {
   // }
 }
-

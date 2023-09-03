@@ -1,4 +1,4 @@
-export const usePlayerStore = defineStore("player", () => {
+export const usePlayerStore = defineStore('player', () => {
   // state
   const Player = ref<any>(null)
   // 全部
@@ -6,16 +6,19 @@ export const usePlayerStore = defineStore("player", () => {
   // 基础播放列表
   const playlist = ref<baseObj[]>([])
   // 我喜欢列表
-  const lovedList = ref<baseObj[]>([])
-  // 随机列表
+  const lovedList = ref<any>(
+    JSON.parse(localStorage.getItem('LOVE_LIST') as string) || []
+  )
   const randomList = ref<baseObj[]>([])
-  const curListMode = ref("random")
+  const curListMode = ref('random')
   const currentMusic = ref<baseObj>({})
   const playMode = ref('loopall')
   const playing = ref(false)
   const currentProgress = ref(0)
   const currentTime = ref(0)
-  const volume = ref(0.8)
+  const volume = ref(
+    JSON.parse(localStorage.getItem('VOLUME') as string) || 0.7
+  )
   const isMute = ref(false)
   const disabled = ref(true)
 
@@ -39,12 +42,9 @@ export const usePlayerStore = defineStore("player", () => {
     play()
   }
 
-
   function play() {
-    if (playing.value)
-      Player.value.play()
-    else
-      Player.value.pause()
+    if (playing.value) Player.value.play()
+    else Player.value.pause()
   }
 
   function next() {
@@ -66,7 +66,6 @@ export const usePlayerStore = defineStore("player", () => {
     playing.value = true
     play()
   }
-
 
   return {
     Player,

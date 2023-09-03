@@ -9,7 +9,7 @@ const btnList = ref([
   },
   {
     name: '全部',
-    active: false
+    active: true
   }
 ])
 
@@ -95,6 +95,36 @@ const handlerBtnClickDebounce = _.debounce(handlerBtnClick, 500, {
         </span>
       </div>
     </div>
+
+    <!-- 搜索 -->
+    <!-- <div
+      ml10
+      h="55%"
+      relative
+      text-4.5
+    >
+      <input
+        placeholder="Type here to search"
+        pl8
+        hfull
+        type="text"
+        outline-none
+        bg="#1d1d1d"
+        rounded
+        border-2
+        border-white
+        border="#b6b9bc"
+        @input="handlerInput"
+      />
+      <span
+        color-gray
+        i-material-symbols:manage-search-rounded
+        absolute
+        top-1.2
+        left-1.5
+        z-1
+      />
+    </div> -->
   </header>
 </template>
 

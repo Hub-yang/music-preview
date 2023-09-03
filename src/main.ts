@@ -2,9 +2,13 @@ import App from './App.vue'
 import '@/styles/index.scss'
 import * as ELIcon from '@element-plus/icons-vue'
 import 'virtual:uno.css'
+import animated from 'animate.css'
 
 // 消除全局注册elementplus图标组件的ts警告
-function isValidKey(key: string | number | symbol, object: object): key is keyof typeof object {
+function isValidKey(
+  key: string | number | symbol,
+  object: object
+): key is keyof typeof object {
   return key in object
 }
 
@@ -16,4 +20,8 @@ for (const iconName in ELIcon) {
   }
 }
 
-app.use(router).use(store).mount('#app')
+app
+  .use(router)
+  .use(store)
+  .use(animated as any)
+  .mount('#app')
