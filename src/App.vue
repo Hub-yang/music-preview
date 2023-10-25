@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// Element Plus 设置中文
 import { usePlayerStore } from './store/player'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 const playStore = usePlayerStore()

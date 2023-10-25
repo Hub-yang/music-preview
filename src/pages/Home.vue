@@ -538,7 +538,6 @@ const toggleListDebounce = _.debounce(toggleList, 500, {
                 rounded
                 bg="#dec998"
                 color="#050506"
-                text-.1
                 font-bold
                 px1
                 py.3
