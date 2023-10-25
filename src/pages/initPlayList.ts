@@ -1,6 +1,7 @@
 import { getFileList } from '@/api/modules'
 import { nanoid } from 'nanoid'
 import { initKeyDown } from '@/pages/initKeyDown'
+import { FYShuffle } from '@/utils'
 export function usePlayList() {
   let allPLayeListTemp: baseObj[] = []
   let timerId
@@ -51,6 +52,9 @@ export function usePlayList() {
           item.isLoved = true
         }
       })
+
+      // 洗牌
+      allPLayeListTemp = FYShuffle(allPLayeListTemp)
       playerStore.playlist = playerStore.allPlayList = allPLayeListTemp
       // 初始化currentMusic
       playerStore.currentMusic = playerStore.playlist[0]

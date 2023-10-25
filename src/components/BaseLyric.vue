@@ -223,16 +223,17 @@ watch(musicPicUrl, () => {
     rgba(255, 255, 0.6) 85%,
     rgba(255, 255, 0) 100%
   );
+
   .music-lyric-items {
     line-height: 34px;
     font-size: 12px;
     transform: translate3d(0, 0, 0);
     transition: transform 0.6s ease-out;
-
-    @include no-wrap;
     .on {
+      white-space: normal;
+      word-wrap: break-word;
+      line-height: 44px;
       transition: all 0.6s ease;
-      // color: #40ce8f;
       color: #5d72f6;
       font-size: 16px;
     }

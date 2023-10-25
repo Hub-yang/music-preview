@@ -7,7 +7,14 @@ const locale = zhCn
 
 const Player = ref()
 nextTick(() => {
-  playStore.Player = Player.value
+  playStore.Player = playStore.Player || Player.value
+})
+
+// 监听标签页激活事件，刷新页面
+document.addEventListener('visibilitychange', function () {
+  if (!document.hidden) {
+    // window.location.reload()
+  }
 })
 </script>
 

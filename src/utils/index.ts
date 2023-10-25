@@ -41,5 +41,19 @@ export function useAnimate(beforeCall, afterCall) {
     playerStore.disabled = true
     afterCall()
   }, 0)
+}
 
+// Fisher-Yates 洗牌
+export function FYShuffle(randomNums: any[]) {
+  let len = randomNums.length
+
+  while (len > 1) {
+    let rand = Math.floor(Math.random() * len)
+    len--
+    let temp = randomNums[len]
+    randomNums[len] = randomNums[rand]
+    randomNums[rand] = temp
+  }
+
+  return randomNums
 }
