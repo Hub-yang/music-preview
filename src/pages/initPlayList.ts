@@ -8,7 +8,7 @@ export function usePlayList() {
   const playerStore = usePlayerStore()
 
   const albumList = ['周杰伦/最伟大的作品', '林俊杰/重拾_快乐', '邓紫棋/启示录']
-  const baseURL = 'https://mochenghualei.com.cn/'
+  const baseURL = 'https://www.huberyyang.site/'
   Promise.all([
     getFileList('audios/周杰伦/'),
     getFileList('audios/林俊杰/'),
@@ -84,6 +84,7 @@ export function usePlayList() {
       const Key = item.key
       let keyName = encodeURI(item.key.split('/')[2].replace('.flac', ''))
       let curUrl = baseURL + encodeURI(Key)
+      
       let musicItem = {
         ...formatMusicKey(Key),
         id: nanoid(),
@@ -94,7 +95,6 @@ export function usePlayList() {
         image: baseURL + `covers/${encodeURI(album)}.jpg`,
         url: curUrl
       }
-
       temp.push(musicItem)
     })
     return temp
