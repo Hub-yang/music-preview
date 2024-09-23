@@ -20,7 +20,7 @@ jobs:
           npx pnpm install
           npx pnpm run build
 
-      - name: Compressed file # 压缩.output目录下文件和目录
+      - name: Compressed file # 压缩dist目录下文件和目录
         run: |
           tar -czf dist.tar.gz -C dist .
 
@@ -44,6 +44,6 @@ jobs:
           port: 22
           script: |
             cd /www/wwwroot/music-preview/
-            rm -rf ./*
+            find . -mindepth 1 ! -name 'dist.tar.gz' -exec rm -rf {} +
             tar -xzf dist.tar.gz
             rm dist.tar.gz
