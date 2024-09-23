@@ -3,7 +3,6 @@
 // 为自定义的环境变量添加ts提示
 interface ImportMetaEnv {
   readonly VITE_ENV: string,
-  readonly VITE_DSC: string,
   readonly VITE_APP_TRUE_API: string,
   readonly VITE_APP_BASE_API: string,
   readonly VITE_APP_REQUEST_API: string,

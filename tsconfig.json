@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    // baseUrl来告诉编译器到哪里去查找模块，所有非相对模块导入都会被当做相对于 baseUrl。
     "baseUrl": ".",
     "module": "ESNext",
     "target": "ESNext",
@@ -17,8 +16,6 @@
     "allowJs": true,
     "useDefineForClassFields": true,
     "sourceMap": true,
-
-    // 非相对模块导入的路径映射配置
     "paths": {
       "@/*": ["src/*"]
     }
